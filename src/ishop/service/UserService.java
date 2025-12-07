@@ -48,9 +48,26 @@ public class UserService {
 
 //        System.out.println("Введите id");
 //        int id = Integer.parseInt(scanner.nextLine());
+            String newLogin = "";
+            boolean running = true;
+            while (running){
+                boolean loginFound = false;
+                System.out.println("Введите login");
+                String login = scanner.nextLine();
+                newLogin = login;
+                for(int i = 0; i < tempList.size(); i++){
+                    String loginExist = tempList.get(i).getLogin();
+                    if(newLogin.equals(loginExist)){
+                        loginFound = true;
+                    }
+                }
+                if(loginFound == true){
+                    System.out.println("Логин " + "'" + newLogin + "'" + " уже существует. Придумайте другой логин");
+                }else {
+                    running = false;
+                }
 
-            System.out.println("Введите login");
-            String log_in = scanner.nextLine();
+            }
 
             System.out.println("Введите password");
             String pass = scanner.nextLine();
@@ -65,7 +82,7 @@ public class UserService {
             String birthdDay = scanner.nextLine();
 
             //Создание "введенного" пользователя
-            User user = new User(id, log_in, pass, name, surname, birthdDay, Role.USER);
+            User user = new User(id, newLogin, pass, name, surname, birthdDay, Role.USER);
 
             //Создание коллекции пользователей
             List<User> userList = new ArrayList<>();
@@ -91,5 +108,12 @@ public class UserService {
         }));
     }
 
+    //Метод проверки логина (в перспективе)
+    private static String checkLogin(List<User> tempList, String login) {
+        String loginExist = "";
+
+
+        return loginExist;
+    }
 
 }

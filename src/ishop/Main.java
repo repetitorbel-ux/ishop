@@ -32,7 +32,7 @@ public class Main {
                     System.out.println("Неверный ввод");
             }
         }
-        scanner.close();
+//        scanner.close();
     }
 
     //Метод
