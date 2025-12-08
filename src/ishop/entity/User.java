@@ -46,6 +46,7 @@ public class User implements Serializable {
         return "User{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", birthday='" + birthday + '\'' +
@@ -60,6 +61,10 @@ public class User implements Serializable {
 
     public String getLogin() {
         return login;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public String getFirstname() {

@@ -1,16 +1,30 @@
 package ishop;
 
+import ishop.entity.User;
+import ishop.service.UserService;
+
+import java.io.File;
+import java.util.List;
 import java.util.Scanner;
 
-import static ishop.service.UserService.createUser;
+import static ishop.service.UserService.*;
 
 public class Main {
     public static void main(String[] args) {
-        baseMenu();
+        String path = "UserList.txt";
+
+        //Отладочный код
+//        File file = new File(path);
+//        System.out.println("Файл существует? " + file.exists());
+//        System.out.println("Абсолютный путь к файлу: " + file.getAbsolutePath());
+
+        List<User> userList = getUserListFromFile(path);
+        baseMenu(userList, path);
     }
 
-    //Основное (первое) меню. Разделить функционал "прорисовки" и логики??? (пока не получилось)
-    public static void baseMenu(){
+/** Основное (первое) меню. Разделить функционал "прорисовки" и логики??? (пока не получилось) */
+    public static void baseMenu(List<User> userList, String path){
+//        String path = "UserList.txt";
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running){
@@ -18,10 +32,24 @@ public class Main {
             String x = scanner.nextLine();
             switch (x) {
                 case "1":
-                    createUser();
+                    createUser(userList, path);
+                    userList = getUserListFromFile(path);//актуализируем список, после создания первого пользователя-админа
                     break;
                 case "2":
-                    System.out.println("2");//"заглушка"
+//                    List<User> userList2 = getUserListFromFile(path);
+                    String login = askLogin();
+                    findByLogin(userList, login);
+                    String loginExist = findByLogin(userList, login);
+
+                    String pass = askPassword();
+                    checkPassword(userList, pass);
+                    String passRight = checkPassword(userList, pass);
+
+                    if(!loginExist.equals("vic_tut") && passRight.equals("true")){
+                        menuClient();
+                    }else {
+                        menuAdmin();
+                    }
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -54,7 +82,7 @@ public class Main {
             String x = scanner.nextLine();
             switch (x) {
                 case "1":
-                    createUser();
+//                    createUser();
                     break;
                 case "2":
                     System.out.println("2");//"заглушка"
@@ -83,7 +111,7 @@ public class Main {
             String x = scanner.nextLine();
             switch (x) {
                 case "1":
-                    createUser();
+//                    createUser();
                     break;
                 case "2":
                     System.out.println("2");//"заглушка"
