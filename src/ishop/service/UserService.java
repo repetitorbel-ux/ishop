@@ -32,7 +32,6 @@ public class UserService {
 //        //Создаем переменную типа List, в которую десериализуем файл с пользователями
 //        List<User> tempList = deserialize(nameOfFile);
 //        System.out.println(tempList);
-
 //        tempList.clear(); //"костыль" для того, чтобы записать первым админа
 
         //Проверка, если список пустой, то вызываем метод, создающий пользователя-админа
