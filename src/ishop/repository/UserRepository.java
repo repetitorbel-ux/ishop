@@ -11,7 +11,6 @@ public class UserRepository {
 
     //Метод, выполняющий сериализацию
     public static void serialize(List<User> userList, String nameOfFile){
-//        String nameOfFile = "UserList";
 
         try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(nameOfFile))) {
             objectOutputStream.writeObject(userList);

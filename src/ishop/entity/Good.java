@@ -1,8 +1,9 @@
 package ishop.entity;
 
+import java.io.Serializable;
 import java.util.Objects;
-
-public class Good {
+/*Пример набора полей для товара Good: id, name, code, brand (Филипс, iphone, Huawei и т.д.), category (Телефоны, стиральные машины и т.д.), price, ограничение по возрасту */
+public class Good implements Serializable {
     private int id;
     private String name;
     private String code;
@@ -103,6 +104,3 @@ public class Good {
         this.ageLimit = ageLimit;
     }
 }
-/*
-Пример набора полей для товара Good: id, name, code, brand (Филипс, iphone, Huawei и т.д.), category (Телефоны, стиральные машины и т.д.), price, ограничение по возрасту
- */
