@@ -85,16 +85,15 @@ public class Main {
             String x = scanner.nextLine();
             switch (x) {
                 case "1":
-                    System.out.println("1");//"заглушка"
+                    showGoods(goodList, path);
                     break;
                 case "2":
-                    System.out.println("2");//"заглушка"
+                    entryCategory(goodList, path);
                     break;
                 case "3":
-                    System.out.println("3");//"заглушка"
+                    sortGoodByCategoryAndPrice(goodList, path);
                     break;
                 case "4":
-                    System.out.println("4");//"temp for debag"
                     goodList = getGoodListFromFile(path);//актуализируем список после добавления первого товара
                     addGood(goodList, path);
                     break;
@@ -127,7 +126,26 @@ public class Main {
         }
 //        scanner.close();
     }
-    /*Good: id, name, code, brand (Филипс, iphone, Huawei и т.д.), category (Телефоны, стиральные машины и т.д.), price, ограничение по возрасту */
+
+    //Меню ввода категории товара
+    public static void entryCategory(List<Good> goodList, String path){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.println("Введите категорию товара");
+        String entryCategory = scanner.nextLine();
+        checkCategory(goodList, path, entryCategory);
+    }
+
+    //Temp
+    public static void entryCost(List<Good> goodList, String path){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.println("Введите стоимость товара");
+        String entryCost = scanner.nextLine();
+//        showGoodsByCategory(goodList, entryCost);
+    }
+
+    //Меню клиента
     public static void menuClient(){
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
