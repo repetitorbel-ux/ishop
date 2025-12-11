@@ -37,14 +37,12 @@ public class Good implements Serializable {
 
     @Override
     public String toString() {
-        return "Good{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", code='" + code + '\'' +
-                ", brand='" + brand + '\'' +
-                ", category='" + category + '\'' +
-                ", price=" + price +
-                ", ageLimit=" + ageLimit +
+        return  '{' + "Индентификатор товара: '" + id + '\'' + ", Название товара: '" + name + '\'' +
+                ", Код товара: '" + code + '\'' +
+                ", Бренд : '" + brand + '\'' +
+                ", Категория '" + category + '\'' +
+                ", Цена " + price +
+                ", Возрастные ограничения (false - нету / true - имеются): '" + ageLimit + '\'' +
                 '}';
     }
 
