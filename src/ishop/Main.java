@@ -97,7 +97,7 @@ public class Main {
                     updateGoodById(goodList, path);
                     break;
                 case "6":
-                    System.out.println("6");//"заглушка"
+                    delGoodById(goodList, path);
                     break;
                 case "7":
                     System.out.println("7");//"заглушка"
