@@ -13,14 +13,9 @@ public class Main {
         String path = "UserList.txt";
         String pathGood = "GoodList.txt";
 
-        //Отладочный код
-//        File file = new File(path);
-//        System.out.println("Файл существует? " + file.exists());
-//        System.out.println("Абсолютный путь к файлу: " + file.getAbsolutePath());
-
         List<User> userList = getUserListFromFile(path);
         List<Good> goodList = getGoodListFromFile(pathGood);
-        System.out.println("deserialized list in main: " + goodList);
+//        System.out.println("deserialized list in main: " + goodList);
         baseMenu(userList, goodList, path, pathGood);
 //        menuAdmin(goodList, path);
 
@@ -82,8 +77,8 @@ public class Main {
                     + "9 - Редактировать информацию о пользователе \n"
                     + "10 - Редактировать свой профиль \n"
                     + "11 - Выход в главное меню \n");
-            String x = scanner.nextLine();
-            switch (x) {
+            String choice = scanner.nextLine();
+            switch (choice) {
                 case "1":
                     showGoods(goodList, path);
                     break;
@@ -98,7 +93,8 @@ public class Main {
                     addGood(goodList, path);
                     break;
                 case "5":
-                    System.out.println("5");//"заглушка"
+                    System.out.println("5 - Обновление товара");//"заглушка"
+                    updateGoodById(goodList, path);
                     break;
                 case "6":
                     System.out.println("6");//"заглушка"
@@ -127,22 +123,13 @@ public class Main {
 //        scanner.close();
     }
 
-    //Меню ввода категории товара
+    //Меню запроса категории товара (2 - Показать товары по категориям)
     public static void entryCategory(List<Good> goodList, String path){
         Scanner scanner = new Scanner(System.in);
         System.out.println();
         System.out.println("Введите категорию товара");
         String entryCategory = scanner.nextLine();
         checkCategory(goodList, path, entryCategory);
-    }
-
-    //Temp
-    public static void entryCost(List<Good> goodList, String path){
-        Scanner scanner = new Scanner(System.in);
-        System.out.println();
-        System.out.println("Введите стоимость товара");
-        String entryCost = scanner.nextLine();
-//        showGoodsByCategory(goodList, entryCost);
     }
 
     //Меню клиента
@@ -190,3 +177,46 @@ public class Main {
         }
     }
 }
+//Temp
+//public static void entryCost(List<Good> goodList, String path){
+//    Scanner scanner = new Scanner(System.in);
+//    System.out.println();
+//    System.out.println("Введите стоимость товара");
+//    String entryCost = scanner.nextLine();
+////        showGoodsByCategory(goodList, entryCost);
+//}
+
+/*
+//Меню запроса полей товара - для удаления
+public static void chooseFieldOfGood(List<Good> goodList, String path){
+    Scanner scanner = new Scanner(System.in);
+    System.out.println();
+    System.out.println("\nВыберете действие: \n" + "1 - id товара \n"
+            + "2 - Наименование товара \n");
+    String entry = scanner.nextLine();
+    switch (entry) {
+        case "1":
+//                entryId(goodList, path);
+            break;
+        case "2":
+//                entryCategory(goodList, path);
+            break;
+        default:
+            System.out.println("Неверный ввод");
+    }
+}
+
+//для удаления
+public static void entryId(List<Good> goodList, String path){
+    Scanner scanner = new Scanner(System.in);
+    System.out.println();
+    System.out.println("Введите id товара");
+    String entryId = scanner.nextLine();
+    showGoodsById(goodList, path, Integer.parseInt(entryId));
+}
+
+        //Отладочный код
+//        File file = new File(path);
+//        System.out.println("Файл существует? " + file.exists());
+//        System.out.println("Абсолютный путь к файлу: " + file.getAbsolutePath());
+ */

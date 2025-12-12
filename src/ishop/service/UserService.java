@@ -20,7 +20,7 @@ public class UserService {
     //Метод, получающий список уже существующих пользователей
     public static List<User> getUserListFromFile(String path) {
         List<User> tempList = deserialize(path);//В переменную типа List, в которую десериализуем файл с пользователями
-        System.out.println(tempList);
+//        System.out.println(tempList);
         return tempList;
     }
 

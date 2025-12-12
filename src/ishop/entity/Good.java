@@ -10,11 +10,11 @@ public class Good implements Serializable {
     private String brand;
     private String category;
     private int price;
-    private boolean ageLimit;
+    private int ageLimit;
 
     //Конструктор
 
-    public Good(int id, String name, String code, String brand, String category, int price, boolean ageLimit) {
+    public Good(int id, String name, String code, String brand, String category, int price, int ageLimit) {
         this.id = id;
         this.name = name;
         this.code = code;
@@ -42,7 +42,7 @@ public class Good implements Serializable {
                 ", Бренд : '" + brand + '\'' +
                 ", Категория '" + category + '\'' +
                 ", Цена " + price +
-                ", Возрастные ограничения (false - нету / true - имеются): '" + ageLimit + '\'' +
+                ", Возрастные ограничения: '" + ageLimit + '\'' +
                 '}';
     }
 
@@ -70,7 +70,7 @@ public class Good implements Serializable {
         return price;
     }
 
-    public boolean isAgeLimit() {
+    public int isAgeLimit() {
         return ageLimit;
     }
 
@@ -98,7 +98,7 @@ public class Good implements Serializable {
         this.price = price;
     }
 
-    public void setAgeLimit(boolean ageLimit) {
+    public void setAgeLimit(int ageLimit) {
         this.ageLimit = ageLimit;
     }
 }
