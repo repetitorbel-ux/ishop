@@ -34,6 +34,7 @@ public class GoodService {
         }));
     }
 
+    /** ******************************** Реализация п. 4 ******************************** */
     //Ввод товара и создание коллекции  (4 - Добавить товар)
     public static Good entryGood(String path, int id) {
 
@@ -57,6 +58,7 @@ public class GoodService {
         System.out.println("Задайте ограничение по возрасту товара");
         int ageLimit = Integer.parseInt(scanner.nextLine());
 
+        /**      * Изменить тип entryGood() на void????    */
         //Создание нового товара и коллекции товаров
         Good goodNew = new Good(id, nameGood, codeGood, brandGood, categoryGood, priceGood, ageLimit);
         List<Good> goodList = new ArrayList<>();//пустая коллекция
@@ -66,7 +68,6 @@ public class GoodService {
         writeGood(goodList, path);//вызов метода, сериализующего товар
         return goodNew; //нигде не используется
     }
-    /**      * Изменить тип entryGood() на void????    */
 
     //Метод, добавляющий товар (4 - Добавить товар)
     public static void addGood(List<Good> goodExistList, String path) {
@@ -100,7 +101,10 @@ public class GoodService {
             }
         }
     }
+    /** ********************************************************************************* */
 
+
+    /** ******************************** Реализация п. 1 ******************************** */
     //Метод, выводящий все товары (1 - Показать список всех товаров)
     public static void showGoods(List<Good> goodList, String path) {
         goodList = getGoodListFromFile(path);
@@ -109,7 +113,10 @@ public class GoodService {
             System.out.println(good);
         }
     }
+    /** ********************************************************************************* */
 
+
+    /** ******************************** Реализация п. 2 ******************************** */
     //Метод, проверяющий введенной с консоли категории товара (2 - Показать товары по категориям)
     public static void checkCategory(List<Good> goodList, String path, String targetCategory) {
         goodList = getGoodListFromFile(path);
@@ -134,7 +141,10 @@ public class GoodService {
             }
         }
     }
+    /** ********************************************************************************* */
 
+
+    /** ******************************** Реализация п. 3 ******************************** */
     //Метод, выводящий товары сортированные по категории и затем по цене (3 - Показать товары по стоимости и категориям (с сортировкой))
     public static void sortGoodByCategoryAndPrice (List < Good > goodList, String path){
         System.out.println("Before sort: " + goodList);
@@ -144,8 +154,10 @@ public class GoodService {
                 .thenComparing(good -> good.getPrice()));
         System.out.println("After sort: " + goodList);
     }
+    /** ********************************************************************************* */
 
 
+    /** ******************************** Реализация п.5 Обновить товар ******************************** */
     //Метод для выбора товара по id, изменения товара и записи изменений в файл
     public static void updateGoodById(List<Good> goodList, String path) {
         goodList = getGoodListFromFile(path);
@@ -225,7 +237,10 @@ public class GoodService {
             }
         }
     }
+    /** ********************************************************************************* */
 
+
+    /** ******************************** Реализация п. 6 ******************************** */
     public static void delGoodById(List<Good> goodList, String path) {
         goodList = getGoodListFromFile(path);
 
@@ -255,6 +270,9 @@ public class GoodService {
             System.out.println("\nУдаление выполнено.");
         }
     }
+    /** ********************************************************************************* */
+
+
 //****************************to Delete***********************************************
     //Пробный - For delete
     public static void changeGoodOld(Good good, int id){
@@ -295,10 +313,6 @@ public class GoodService {
 
         }
     }
-
-
-
-
 
 }
 //        Optional<Good> idGoodMax = findMaxGoodId(goodExistList);

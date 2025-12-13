@@ -93,6 +93,10 @@ public class User implements Serializable {
         this.login = login;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public void setFirstname(String firstname) {
         this.firstname = firstname;
     }

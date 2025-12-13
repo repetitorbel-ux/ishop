@@ -10,20 +10,20 @@ import static ishop.service.UserService.*;
 
 public class Main {
     public static void main(String[] args) {
-        String path = "UserList.txt";
-        String pathGood = "GoodList.txt";
+        String userPath = "UserList.txt";
+        String goodPath = "GoodList.txt";
 
-        List<User> userList = getUserListFromFile(path);
-        List<Good> goodList = getGoodListFromFile(pathGood);
+        List<User> userList = getUserListFromFile(userPath);
+        List<Good> goodList = getGoodListFromFile(goodPath);
 //        System.out.println("deserialized list in main: " + goodList);
-        baseMenu(userList, goodList, path, pathGood);
+        baseMenu(userList, userPath, goodList, goodPath);
 //        menuAdmin(goodList, path);
 
     }
 
 /** Основное (первое) меню. Разделить функционал "прорисовки" и логики??? (пока не получилось)
  * Избавиться от "лишиних" аргументов метода?? */
-    public static void baseMenu(List<User> userList, List<Good> goodList, String path, String pathGood){
+    public static void baseMenu(List<User> userList, String userPath, List<Good> goodList, String goodPath){
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running){
@@ -31,8 +31,8 @@ public class Main {
             String x = scanner.nextLine();
             switch (x) {
                 case "1":
-                    createUser(userList, path);
-                    userList = getUserListFromFile(path);//актуализируем список, после создания первого пользователя-админа
+                    createUser(userList, userPath);
+                    userList = getUserListFromFile(userPath);//актуализируем список, после создания первого пользователя-админа
                     break;
                 case "2":
                     String login = askLogin();
@@ -46,7 +46,7 @@ public class Main {
                     if(!loginExist.equals("vic_tut") && passRight.equals("true")){
                         menuClient();
                     }else {
-                        menuAdmin(goodList, pathGood);
+                        menuAdmin(userList, userPath, goodList, goodPath);
                     }
                     break;
                 case "0":
@@ -62,7 +62,7 @@ public class Main {
     }
 
     //Метод
-    public static void menuAdmin(List<Good> goodList, String path){
+    public static void menuAdmin(List<User> userList, String userPath, List<Good> goodList, String goodPath){
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running){
@@ -75,43 +75,39 @@ public class Main {
                     + "7 - Показать всех пользователей \n"
                     + "8 - Найти пользователя по логину \n"
                     + "9 - Редактировать информацию о пользователе \n"
-                    + "10 - Редактировать свой профиль \n"
-                    + "11 - Выход в главное меню \n");
+                    + "0 - Выход в главное меню \n");
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
-                    showGoods(goodList, path);
+                    showGoods(goodList, goodPath);
                     break;
                 case "2":
-                    entryCategory(goodList, path);
+                    entryCategory(goodList, goodPath);
                     break;
                 case "3":
-                    sortGoodByCategoryAndPrice(goodList, path);
+                    sortGoodByCategoryAndPrice(goodList, goodPath);
                     break;
                 case "4":
-                    goodList = getGoodListFromFile(path);//актуализируем список после добавления первого товара
-                    addGood(goodList, path);
+                    goodList = getGoodListFromFile(goodPath);//актуализируем список после добавления первого товара
+                    addGood(goodList, goodPath);
                     break;
                 case "5":
                     System.out.println("5 - Обновление товара");//"заглушка"
-                    updateGoodById(goodList, path);
+                    updateGoodById(goodList, goodPath);
                     break;
                 case "6":
-                    delGoodById(goodList, path);
+                    delGoodById(goodList, goodPath);
                     break;
                 case "7":
-                    System.out.println("7");//"заглушка"
+                    showUsers(userList, userPath);
                     break;
                 case "8":
-                    System.out.println("8");//"заглушка"
+                    entryLoginUser(userList, userPath);
                     break;
                 case "9":
-                    System.out.println("9");//"заглушка"
+                    updateUserById(userList, userPath);
                     break;
-                case "10":
-                    System.out.println("10");//"заглушка"
-                    break;
-                case "11":
+                case "0":
                     System.out.println("Выходим из программы...");
                     delay();
                     running = false;
