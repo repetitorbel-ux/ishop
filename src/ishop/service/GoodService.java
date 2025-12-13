@@ -240,16 +240,16 @@ public class GoodService {
         }else {
             List<Good> temp = new ArrayList<>();
             for(Good g : goodList){
-                if (g.getId() < id){
+                if (g.getId() == id){
                     temp.add(good);
                 }
                 goodTemp = good;
             }
             goodList.removeAll(temp);
-            System.out.println(goodList);
+            System.out.println("Список после удаления: " + goodList);
         }
 
-//        writeGood(goodList, path); //Сохраняем изменения в файл
+        writeGood(goodList, path); //Сохраняем изменения в файл
 
         if (!(goodTemp == null)) {
             System.out.println("\nУдаление выполнено.");
