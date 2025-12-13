@@ -34,7 +34,58 @@ public class GoodService {
         }));
     }
 
-    /** ******************************** Реализация п. 4 ******************************** */
+    /** ******************************** Реализация п.1 - Показать список всех товаров ****************************** */
+    //Метод, выводящий все товары (1 - Показать список всех товаров)
+    public static void showGoods(List<Good> goodList, String path) {
+        goodList = getGoodListFromFile(path);
+        System.out.println("Список товаров:");
+        for (Good good : goodList) {
+            System.out.println(good);
+        }
+    }
+    /** ************************************************************************************************************* */
+
+     /** ******************************* Реализация п.2 - Показать товары по категориям******************************* */
+    //Метод, проверяющий введенной с консоли категории товара (2 - Показать товары по категориям)
+    public static void checkCategory(List<Good> goodList, String path, String targetCategory) {
+        goodList = getGoodListFromFile(path);
+        System.out.println();
+        String categoryNotExist = null;
+        for (Good good : goodList) {
+            if (good.getCategory().equals(targetCategory)) {
+                categoryNotExist = targetCategory;
+            }
+        }
+        if (categoryNotExist == null) {
+            System.out.println("Категории товара " + '\'' + targetCategory + '\'' + " не существует. Введите корректное наименование категории");
+        } else showGoodsByCategory(goodList, targetCategory);
+    }
+
+    //Метод, выводящий товары определенной категории (2 - Показать товары по категориям)
+    public static void showGoodsByCategory(List<Good> goodList, String targetCategory) {
+        System.out.println("Список товаров в категории " + targetCategory + ": ");
+        for (Good good : goodList) {
+            if (good.getCategory().equals(targetCategory)) {
+                System.out.println(good);
+            }
+        }
+    }
+    /** ************************************************************************************************************* */
+
+
+    /** ***************** Реализация п.3 - Показать товары по стоимости и категориям (с сортировкой) ***************** */
+    //Метод, выводящий товары сортированные по категории и затем по цене (3 - Показать товары по стоимости и категориям (с сортировкой))
+    public static void sortGoodByCategoryAndPrice (List < Good > goodList, String path){
+        System.out.println("Before sort: " + goodList);
+        System.out.println();
+        goodList = getGoodListFromFile(path);
+        goodList.sort(Comparator.comparing((Good good1) -> good1.getCategory())
+                .thenComparing(good -> good.getPrice()));
+        System.out.println("After sort: " + goodList);
+    }
+    /** ************************************************************************************************************* */
+
+    /** ************************************* Реализация п.4 - Добавить товар ************************************* */
     //Ввод товара и создание коллекции  (4 - Добавить товар)
     public static Good entryGood(String path, int id) {
 
@@ -101,63 +152,9 @@ public class GoodService {
             }
         }
     }
-    /** ********************************************************************************* */
+    /** ************************************************************************************************************* */
 
-
-    /** ******************************** Реализация п. 1 ******************************** */
-    //Метод, выводящий все товары (1 - Показать список всех товаров)
-    public static void showGoods(List<Good> goodList, String path) {
-        goodList = getGoodListFromFile(path);
-        System.out.println("Список товаров:");
-        for (Good good : goodList) {
-            System.out.println(good);
-        }
-    }
-    /** ********************************************************************************* */
-
-
-    /** ******************************** Реализация п. 2 ******************************** */
-    //Метод, проверяющий введенной с консоли категории товара (2 - Показать товары по категориям)
-    public static void checkCategory(List<Good> goodList, String path, String targetCategory) {
-        goodList = getGoodListFromFile(path);
-        System.out.println();
-        String categoryNotExist = null;
-        for (Good good : goodList) {
-            if (good.getCategory().equals(targetCategory)) {
-                categoryNotExist = targetCategory;
-            }
-        }
-        if (categoryNotExist == null) {
-            System.out.println("Категории товара " + '\'' + targetCategory + '\'' + " не существует. Введите корректное наименование категории");
-        } else showGoodsByCategory(goodList, targetCategory);
-    }
-
-    //Метод, выводящий товары определенной категории (2 - Показать товары по категориям)
-    public static void showGoodsByCategory(List<Good> goodList, String targetCategory) {
-        System.out.println("Список товаров в категории " + targetCategory + ": ");
-        for (Good good : goodList) {
-            if (good.getCategory().equals(targetCategory)) {
-                System.out.println(good);
-            }
-        }
-    }
-    /** ********************************************************************************* */
-
-
-    /** ******************************** Реализация п. 3 ******************************** */
-    //Метод, выводящий товары сортированные по категории и затем по цене (3 - Показать товары по стоимости и категориям (с сортировкой))
-    public static void sortGoodByCategoryAndPrice (List < Good > goodList, String path){
-        System.out.println("Before sort: " + goodList);
-        System.out.println();
-        goodList = getGoodListFromFile(path);
-        goodList.sort(Comparator.comparing((Good good1) -> good1.getCategory())
-                .thenComparing(good -> good.getPrice()));
-        System.out.println("After sort: " + goodList);
-    }
-    /** ********************************************************************************* */
-
-
-    /** ******************************** Реализация п.5 Обновить товар ******************************** */
+    /** ******************************** Реализация п.5 - Обновить товар ******************************** */
     //Метод для выбора товара по id, изменения товара и записи изменений в файл
     public static void updateGoodById(List<Good> goodList, String path) {
         goodList = getGoodListFromFile(path);
@@ -237,10 +234,10 @@ public class GoodService {
             }
         }
     }
-    /** ********************************************************************************* */
+    /** ************************************************************************************************************* */
 
 
-    /** ******************************** Реализация п. 6 ******************************** */
+    /** ********************************************** Реализация п. 6 ********************************************** */
     public static void delGoodById(List<Good> goodList, String path) {
         goodList = getGoodListFromFile(path);
 
@@ -270,7 +267,7 @@ public class GoodService {
             System.out.println("\nУдаление выполнено.");
         }
     }
-    /** ********************************************************************************* */
+    /** ************************************************************************************************************* */
 
 
 //****************************to Delete***********************************************

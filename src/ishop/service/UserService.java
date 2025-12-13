@@ -5,7 +5,9 @@ import ishop.entity.Good;
 import ishop.entity.User;
 import ishop.repository.GoodRepository;
 import ishop.repository.UserRepository;
+
 import java.util.*;
+
 import static ishop.repository.UserRepository.deserialize;
 import static ishop.service.GoodService.checkCategory;
 
@@ -28,9 +30,29 @@ public class UserService {
         return tempList;
     }
 
-    /** ******************************** Реализация п. 8 ******************************** */
+    //Метод, сериализующий пользователя
+    public static void writeUser(List<User> userList, String userPath) {
+        UserRepository userRepository = new UserRepository();
+        userRepository.serialize(userList, userPath);
+    }
+
+
+    /**************************** Реализация п.7 меню Admin - Показать всех пользователей *****************************/
+
+    //Метод, выводящий всех пользователей (7 - Показать всех пользователей)
+    public static void showUsers(List<User> userList, String userPath) {
+        userList = getUserListFromFile(userPath);
+        System.out.println("Список пользователей:");
+        for (User user : userList) {
+            System.out.println(user);
+        }
+    }
+    /** ************************************************************************************************************* */
+
+
+    /*************************** Реализация п.8 меню Admin - Найти пользователя по логину ******************************/
     //Меню запроса логина
-    public static void entryLoginUser(List<User> userList, String userPath){
+    public static void entryLoginUser(List<User> userList, String userPath) {
         Scanner scanner = new Scanner(System.in);
         System.out.println();
         System.out.println("Введите логин пользователя");
@@ -61,25 +83,10 @@ public class UserService {
             }
         }
     }
-
-    //Метод, сериализующий пользователя
-    public static void writeUser(List<User> userList, String userPath) {
-        UserRepository userRepository = new UserRepository();
-        userRepository.serialize(userList, userPath);
-    }
-    /** ********************************************************************************* */
-
-    //Метод, выводящий всех пользователей (7 - Показать всех пользователей)
-    public static void showUsers(List<User> userList, String userPath) {
-        userList = getUserListFromFile(userPath);
-        System.out.println("Список пользователей:");
-        for (User user : userList) {
-            System.out.println(user);
-        }
-    }
+    /** ************************************************************************************************************* */
 
 
-    /** ******************************** Реализация п.9 Редактировать информацию о пользователе ******************************** */
+    /** ********************* Реализация п.9 меню Admin - Редактировать информацию о пользователе *********************/
     //Метод для выбора товара по id, изменения информации о пользователе и записи изменений в файл
     public static void updateUserById(List<User> userList, String userPath) {
         userList = getUserListFromFile(userPath);
@@ -105,8 +112,8 @@ public class UserService {
 
     //Метод поиска пользователя по id
     public static User findById(List<User> userList, int id) {
-        for (User u : userList) {
-            if (u.getId() == id) return u;
+        for (User user : userList) {
+            if (user.getId() == id) return user;
         }
         return null;
     }
@@ -128,6 +135,7 @@ public class UserService {
             switch (choice) {
                 case "1":
                     System.out.println("Введите логин:");
+
                     user.setLogin(scanner.nextLine());
                     break;
                 case "2":
@@ -154,19 +162,12 @@ public class UserService {
             }
         }
     }
-    /** ********************************************************************************* */
+    /** ************************************************************************************************************* */
 
 
-    /** ******************************** Создание пользователей ******************************** */
+    /********************************************** Создание пользователей ********************************************/
     //Метод, создающий пользователей
     public static void createUser(List<User> tempList, String path) {
-//        //Сохраняем в переменную имя файла для хранения пользователей
-//        String nameOfFile = "UserList.txt";
-//
-//        //Создаем переменную типа List, в которую десериализуем файл с пользователями
-//        List<User> tempList = deserialize(nameOfFile);
-//        System.out.println(tempList);
-//        tempList.clear(); //"костыль" для того, чтобы записать первым админа
 
         //Проверка, если список пустой, то вызываем метод, создающий пользователя-админа
         if (tempList.isEmpty()) {
@@ -205,7 +206,6 @@ public class UserService {
                     running = false;
                 }
             }
-            //*************************************
 
             System.out.println("Введите password");
             String pass = scanner.nextLine();
@@ -247,7 +247,7 @@ public class UserService {
     }
 
     //Метод запроса логина при регистрации пользователя
-    public static String askLogin(){
+    public static String askLogin() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите login");
         String login = scanner.nextLine();
@@ -255,7 +255,7 @@ public class UserService {
     }
 
     //Метод запроса пароля при регистрации пользователя
-    public static String askPassword(){
+    public static String askPassword() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите пароль");
         String pass = scanner.nextLine();
@@ -295,10 +295,23 @@ public class UserService {
         if (passFound == true) {
             return "true";
         } else {
-            System.out.println("Введен не верный пароль, повторите ввод пароля" );
+            System.out.println("Введен не верный пароль, повторите ввод пароля");
             return "false";
         }
     }
 
-
 }
+/*
+//Лишний метод
+    public static boolean checkAccess(List<User> userList, String userPath) {
+        userList = getUserListFromFile(userPath);
+        boolean result = false;
+        for (User user : userList) {
+            if (user.getRole() == Role.ADMIN) {
+                result = true;
+                break;
+            }else result = false;
+        }
+        return result;
+    }
+ */

@@ -2,6 +2,7 @@ package ishop;
 
 import ishop.entity.Good;
 import ishop.entity.User;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -15,18 +16,20 @@ public class Main {
 
         List<User> userList = getUserListFromFile(userPath);
         List<Good> goodList = getGoodListFromFile(goodPath);
-//        System.out.println("deserialized list in main: " + goodList);
-        baseMenu(userList, userPath, goodList, goodPath);
-//        menuAdmin(goodList, path);
 
+        baseMenu(userList, userPath, goodList, goodPath);
     }
 
-/** Основное (первое) меню. Разделить функционал "прорисовки" и логики??? (пока не получилось)
- * Избавиться от "лишиних" аргументов метода?? */
-    public static void baseMenu(List<User> userList, String userPath, List<Good> goodList, String goodPath){
+    /**
+     * Основное (первое) меню. Разделить функционал "прорисовки" и логики??? (пока не получилось)
+     * Избавиться от "лишних" параметров метода, возможно???
+     */
+
+    //Метод, реализующий основное меню
+    public static void baseMenu(List<User> userList, String userPath, List<Good> goodList, String goodPath) {
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
-        while (running){
+        while (running) {
             System.out.println("\nВыберете действие: \n" + "1 - Регистрация пользователя \n" + "2 - Войти в кабинет \n" + "0 - Выход \n");
             String x = scanner.nextLine();
             switch (x) {
@@ -43,9 +46,9 @@ public class Main {
                     checkPassword(userList, pass);
                     String passRight = checkPassword(userList, pass);
 
-                    if(!loginExist.equals("vic_tut") && passRight.equals("true")){
+                    if (!loginExist.equals("vic_tut") && passRight.equals("true")) {
                         menuClient();
-                    }else {
+                    } else {
                         menuAdmin(userList, userPath, goodList, goodPath);
                     }
                     break;
@@ -61,11 +64,11 @@ public class Main {
 //        scanner.close();
     }
 
-    //Метод
-    public static void menuAdmin(List<User> userList, String userPath, List<Good> goodList, String goodPath){
+    //Метод, реализующий меню пользователя с правами администратора
+    public static void menuAdmin(List<User> userList, String userPath, List<Good> goodList, String goodPath) {
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
-        while (running){
+        while (running) {
             System.out.println("\nВыберете действие: \n" + "1 - Показать список всех товаров \n"
                     + "2 - Показать товары по категориям \n"
                     + "3 - Показать товары по стоимости и категориям (с сортировкой) \n"
@@ -92,8 +95,7 @@ public class Main {
                     addGood(goodList, goodPath);
                     break;
                 case "5":
-                    System.out.println("5 - Обновление товара");//"заглушка"
-                    updateGoodById(goodList, goodPath);
+                     updateGoodById(goodList, goodPath);
                     break;
                 case "6":
                     delGoodById(goodList, goodPath);
@@ -120,7 +122,7 @@ public class Main {
     }
 
     //Меню запроса категории товара (2 - Показать товары по категориям)
-    public static void entryCategory(List<Good> goodList, String path){
+    public static void entryCategory(List<Good> goodList, String path) {
         Scanner scanner = new Scanner(System.in);
         System.out.println();
         System.out.println("Введите категорию товара");
@@ -128,11 +130,11 @@ public class Main {
         checkCategory(goodList, path, entryCategory);
     }
 
-    //Меню клиента
-    public static void menuClient(){
+    //Метод, реализующий меню клиента (авторизованного пользователя)
+    public static void menuClient() {
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
-        while (running){
+        while (running) {
             System.out.println("\nВыберете действие: \n" + "1 - Показать список всех товаров: просто вывод списка \n"
                     + "2 - Показать товары по категориям: выбор категории → вывод товаров \n"
                     + "3 - Показать товары по стоимости и категориям (с сортировкой): фильтры + сортировка \n"
@@ -162,10 +164,10 @@ public class Main {
             }
         }
 //        scanner.close();
-
     }
 
-    public static void delay(){
+    //Метод, реализующий задержку при выходе из программы
+    public static void delay() {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -173,16 +175,17 @@ public class Main {
         }
     }
 }
+/*
 //Temp
 //public static void entryCost(List<Good> goodList, String path){
 //    Scanner scanner = new Scanner(System.in);
 //    System.out.println();
 //    System.out.println("Введите стоимость товара");
 //    String entryCost = scanner.nextLine();
-////        showGoodsByCategory(goodList, entryCost);
+/// /        showGoodsByCategory(goodList, entryCost);
 //}
 
-/*
+
 //Меню запроса полей товара - для удаления
 public static void chooseFieldOfGood(List<Good> goodList, String path){
     Scanner scanner = new Scanner(System.in);
@@ -215,4 +218,9 @@ public static void entryId(List<Good> goodList, String path){
 //        File file = new File(path);
 //        System.out.println("Файл существует? " + file.exists());
 //        System.out.println("Абсолютный путь к файлу: " + file.getAbsolutePath());
+
+case "5":
+                    boolean res = checkAccess(userList, userPath);
+                    if (res) updateGoodById(goodList, goodPath);
+                    break;
  */
