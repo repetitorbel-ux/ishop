@@ -146,6 +146,7 @@ public class GoodService {
     }
 
 
+    //Метод для выбора товара по id, изменения товара и записи изменений в файл
     public static void updateGoodById(List<Good> goodList, String path) {
         goodList = getGoodListFromFile(path);
 
@@ -176,6 +177,7 @@ public class GoodService {
         return null;
     }
 
+    //Метод, изменяющий товар
     public static void changeGood(Good good) {
         Scanner scanner = new Scanner(System.in);
 
@@ -221,6 +223,36 @@ public class GoodService {
                 default:
                     System.out.println("Неверный ввод. Повторите.");
             }
+        }
+    }
+
+    public static void delGoodById(List<Good> goodList, String path) {
+        goodList = getGoodListFromFile(path);
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\nВведите id товара: ");
+        int id = Integer.parseInt(scanner.nextLine());
+
+        Good goodTemp = null;
+        Good good = findById(goodList, id);
+        if (good == null) {
+            System.out.println("Товар не найден.");
+        }else {
+            List<Good> temp = new ArrayList<>();
+            for(Good g : goodList){
+                if (g.getId() == id){
+                    temp.add(good);
+                }
+                goodTemp = good;
+            }
+            goodList.removeAll(temp);
+            System.out.println("Список после удаления: " + goodList);
+        }
+
+        writeGood(goodList, path); //Сохраняем изменения в файл
+
+        if (!(goodTemp == null)) {
+            System.out.println("\nУдаление выполнено.");
         }
     }
 //****************************to Delete***********************************************
