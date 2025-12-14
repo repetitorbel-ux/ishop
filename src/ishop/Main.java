@@ -39,15 +39,13 @@ public class Main {
                     break;
                 case "2":
                     String login = askLogin();
-                    findByLogin(userList, login);
                     String loginExist = findByLogin(userList, login);
 
                     String pass = askPassword();
-                    checkPassword(userList, pass);
                     String passRight = checkPassword(userList, pass);
 
                     if (!loginExist.equals("vic_tut") && passRight.equals("true")) {
-                        menuClient();
+                        menuClient(userList, userPath, goodList, goodPath, loginExist);
                     } else {
                         menuAdmin(userList, userPath, goodList, goodPath);
                     }
@@ -123,6 +121,7 @@ public class Main {
 
     //Меню запроса категории товара (2 - Показать товары по категориям)
     public static void entryCategory(List<Good> goodList, String path) {
+
         Scanner scanner = new Scanner(System.in);
         System.out.println();
         System.out.println("Введите категорию товара");
@@ -131,30 +130,30 @@ public class Main {
     }
 
     //Метод, реализующий меню клиента (авторизованного пользователя)
-    public static void menuClient() {
+    public static void menuClient(List<User> userList, String userPath, List<Good> goodList, String goodPath, String login) {
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running) {
-            System.out.println("\nВыберете действие: \n" + "1 - Показать список всех товаров: просто вывод списка \n"
+            System.out.println("\nВыберете действие: \n" + "1 - Показать список всех товаров \n"
                     + "2 - Показать товары по категориям: выбор категории → вывод товаров \n"
-                    + "3 - Показать товары по стоимости и категориям (с сортировкой): фильтры + сортировка \n"
+                    + "3 - Показать товары по стоимости и категориям (с сортировкой) \n"
                     + "4 - Редактировать свой профиль \n"
-                    + "5 - Выход в главное меню \n");
-            String x = scanner.nextLine();
-            switch (x) {
+                    + "0 - Выход в главное меню \n");
+            String choice = scanner.nextLine();
+            switch (choice) {
                 case "1":
-                    System.out.println("1");//"заглушка"
+                    showGoods(goodList, goodPath);
                     break;
                 case "2":
-                    System.out.println("2");//"заглушка"
+                    entryCategory(goodList, goodPath);
                     break;
                 case "3":
-                    System.out.println("3");//"заглушка"
+                    sortGoodByCategoryAndPrice(goodList, goodPath);
                     break;
                 case "4":
-                    System.out.println("4");//"заглушка"
+                    updateCurrentUser(userList, userPath, login);
                     break;
-                case "5":
+                case "0":
                     System.out.println("Выходим из программы...");
                     delay();
                     running = false;
