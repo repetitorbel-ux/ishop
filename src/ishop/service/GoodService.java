@@ -66,7 +66,7 @@ public class GoodService {
         System.out.println("Список товаров в категории " + targetCategory + ": ");
         for (Good good : goodList) {
             if (good.getCategory().equals(targetCategory)) {
-                System.out.println(good);
+                System.out.println("Товары в категории " + targetCategory + ": '\'" + good + '\'');
             }
         }
     }
@@ -180,8 +180,8 @@ public class GoodService {
 
     //Метод поиска товара по id
     public static Good findById(List<Good> list, int id) {
-        for (Good g : list) {
-            if (g.getId() == id) return g;
+        for (Good good : list) {
+            if (good.getId() == id) return good;
         }
         return null;
     }

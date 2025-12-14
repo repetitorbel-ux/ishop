@@ -85,6 +85,78 @@ public class UserService {
     }
     /** ************************************************************************************************************* */
 
+    /** ********************* Реализация п.4 меню Client - Редактировать информацию о пользователе *********************/
+    public static void updateCurrentUser(List<User> userList, String userPath, String targetLogin) {
+
+        userList = getUserListFromFile(userPath);
+
+        User currentUser = null;
+        for (User user : userList) {
+            if (user.getLogin().equals(targetLogin)) {
+                currentUser = user;
+                System.out.println(currentUser);
+            }
+        }
+
+        changeUserItSelf(currentUser);  //Вызываем метод, который изменяет объект внутри списка
+
+        writeUser(userList, userPath); //Сохраняем изменения в файл
+
+        System.out.println("\nИзменения сохранены.");
+    }
+
+    //Метод поиска пользователя по имени
+//    public static User findByLogin2(List<User> userList, String login) {
+//        for (User user : userList) {
+//            if (user.getLogin().equals(login)) return user;
+//        }
+//        return null;
+//    }
+
+    //Метод, изменяющий информацию о пользователе (администраторский доступ)
+    public static void changeUserItSelf(User user) {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nВыберете действие: \n" + "1 - Изменить логин пользователя \n"
+                    + "2 - Изменить пароль пользователя \n"
+                    + "3 - Изменить имя пользователя \n"
+                    + "4 - Изменить фамилию пользователя \n"
+                    + "5 - Изменить день рождения пользователя \n"
+                    + "0. Выход \n");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.println("Введите новый логин:");
+                    user.setLogin(scanner.nextLine());
+                    break;
+                case "2":
+                    System.out.println("Введите новый пароль:");
+                    user.setPassword(scanner.nextLine());
+                    break;
+                case "3":
+                    System.out.println("Введите новое имя:");
+                    user.setFirstname(scanner.nextLine());
+                    break;
+                case "4":
+                    System.out.println("Введите новую фамилию:");
+                    user.setLastname(scanner.nextLine());
+                    break;
+                case "5":
+                    System.out.println("Введите день рождения:");
+                    user.setBirthday(scanner.nextLine());
+                    break;
+                case "0":
+                    System.out.println("Выход из меню обновления товара.");
+                    return;
+                default:
+                    System.out.println("Неверный ввод. Повторите.");
+            }
+        }
+    }
+    /** ************************************************************************************************************* */
 
     /** ********************* Реализация п.9 меню Admin - Редактировать информацию о пользователе *********************/
     //Метод для выбора товара по id, изменения информации о пользователе и записи изменений в файл
@@ -97,11 +169,11 @@ public class UserService {
 
         User user = findById(userList, id);
         if (user == null) {
-            System.out.println("Товар не найден.");
+            System.out.println("Пользователь не найден.");
             return;
         }
 
-        System.out.println("Выбранный товар: " + user);
+        System.out.println("Выбранный пользователь: " + user);
 
         changeUser(user);  //Вызываем метод, который изменяет объект внутри списка
 
@@ -118,7 +190,7 @@ public class UserService {
         return null;
     }
 
-    //Метод, изменяющий информацию о пользователе
+    //Метод, изменяющий информацию о пользователе (администраторский доступ)
     public static void changeUser(User user) {
         Scanner scanner = new Scanner(System.in);
 
