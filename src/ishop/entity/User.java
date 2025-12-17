@@ -14,13 +14,16 @@ public class User implements Serializable {
     private String password;
     private String firstname;
     private String lastname;
-    private String birthday;
+    private LocalDate birthday;
     private Role role;
 
     //Конструктор
 
 
-    public User(int id, String login, String password, String firstname, String lastname, String birthday, Role role) {
+    public User() {
+    }
+
+    public User(int id, String login, String password, String firstname, String lastname, LocalDate birthday, Role role) {
         this.id = id;
         this.login = login;
         this.password = password;
@@ -75,7 +78,7 @@ public class User implements Serializable {
         return lastname;
     }
 
-    public String getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
@@ -105,7 +108,7 @@ public class User implements Serializable {
         this.lastname = lastname;
     }
 
-    public void setBirthday(String birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 

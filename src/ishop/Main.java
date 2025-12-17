@@ -35,7 +35,7 @@ public class Main {
             switch (x) {
                 case "1":
                     createUser(userList, userPath);
-                    userList = getUserListFromFile(userPath);//актуализируем список, после создания первого пользователя-админа
+                    userList = getUserListFromFile(userPath);//актуализируем список после создания первого пользователя-админа
                     break;
                 case "2":
                     String login = askLogin();
@@ -43,6 +43,7 @@ public class Main {
 
                     String pass = askPassword();
                     String passRight = checkPassword(userList, pass);
+
 
                     if (!loginExist.equals("vic_tut") && passRight.equals("true")) {
                         menuClient(userList, userPath, goodList, goodPath, loginExist);
@@ -93,7 +94,7 @@ public class Main {
                     addGood(goodList, goodPath);
                     break;
                 case "5":
-                     updateGoodById(goodList, goodPath);
+                    updateGoodById(goodList, goodPath);
                     break;
                 case "6":
                     delGoodById(goodList, goodPath);
