@@ -345,14 +345,6 @@ public class UserService {
         return login;
     }
 
-    //Метод запроса пароля при регистрации пользователя
-    public static String askPassword() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите пароль");
-        String pass = scanner.nextLine();
-        return pass;
-    }
-
     //Метод, отвечающий за поиск пользователя по логину
     public static String findByLogin(List<User> tempList, String login) {
 
@@ -372,6 +364,14 @@ public class UserService {
         }
     }
 
+    //Метод запроса пароля при регистрации пользователя
+    public static String askPassword() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите пароль");
+        String pass = scanner.nextLine();
+        return pass;
+    }
+
     //Метод, проверяющий введенный пароль
     /** !!!"Сделать проверку на null!!!*/
     public static String checkPassword(List<User> tempList, String pass) {
@@ -388,7 +388,16 @@ public class UserService {
             return "true";
         } else {
             System.out.println("Введен не верный пароль, повторите ввод пароля");
+            boolean running = true;
+            while (running) {
+                askPassword();
+                if(passFound == true){
+                    running = false;
+                    break;
+                }
+            }
             return "false";
+
         }
     }
 

@@ -41,8 +41,12 @@ public class Main {
                     String login = askLogin();
                     String loginExist = findByLogin(userList, login);
 
-                    String pass = askPassword();
-                    String passRight = checkPassword(userList, pass);
+                    String passExist = null;
+                    if(!(loginExist == null)){
+                        String pass = askPassword();
+                        passExist = pass;
+                    }
+                    String passRight = checkPassword(userList, passExist);
 
 
                     if (!loginExist.equals("vic_tut") && passRight.equals("true")) {

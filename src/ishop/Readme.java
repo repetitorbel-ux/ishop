@@ -15,6 +15,16 @@ public class Readme {
     7) при вводе не правильного пароля пишет: "Введен не верный пароль, повторите ввод пароля", и загружает меню админа,
     при этом пользователь не админ
     исп-ть while?
+    Введите login user2
+Введите пароль 333
+Введен не верный пароль, повторите ввод пароля
+Введите пароль 3333
+Показывает меню админа
+
+    8) объединить askPassword() и checkPassword()
+
+    9) Пользователя с логином 'iser' не существует. Пройдите регистрацию
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "String.equals(Object)" because "passFromUser" is null
 
     8)есть логика в baseMenu() - это норм?
 
