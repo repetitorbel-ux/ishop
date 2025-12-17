@@ -3,28 +3,24 @@ package ishop.service;
 import ishop.entity.Good;
 import ishop.repository.GoodRepository;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ishop.repository.GoodRepository.deserializeGood;
 
 public class GoodService {
 
     //Метод, получающий список уже существующих товаров
-    public static List<Good> getGoodListFromFile(String path) {
-
-        List<Good> goodExistList = deserializeGood(path);//В переменную типа List, в которую десериализуем файл с товарами
+    public List<Good> getGoodListFromFile(String path) {
+        GoodRepository goodRepository=new GoodRepository();
+        List<Good> goodExistList = goodRepository.findAllGoods();//В переменную типа List, в которую десериализуем файл с товарами
 //        System.out.println("Список товаров (getGoodListFromFile): " + goodExistList);
         return goodExistList;
     }
 
     //Метод, сериализующий товар
-    public static void writeGood(List<Good> goodList, String path) {
+    public void writeGood(List<Good> goodList) {
         GoodRepository goodRepository = new GoodRepository();
-        goodRepository.serializeGood(goodList, path);
+        goodRepository.saveGood(goodList);
     }
 
     //Метод поиска максимального значения в списке
@@ -36,8 +32,8 @@ public class GoodService {
 
     /** ******************************** Реализация п.1 - Показать список всех товаров ****************************** */
     //Метод, выводящий все товары (1 - Показать список всех товаров)
-    public static void showGoods(List<Good> goodList, String path) {
-        goodList = getGoodListFromFile(path);
+    public static void showGoods(String path) {
+        List<Good> goodList = getGoodListFromFile(path);
         System.out.println("Список товаров:");
         for (Good good : goodList) {
             System.out.println(good);
@@ -75,7 +71,7 @@ public class GoodService {
 
     /** ***************** Реализация п.3 - Показать товары по стоимости и категориям (с сортировкой) ***************** */
     //Метод, выводящий товары сортированные по категории и затем по цене (3 - Показать товары по стоимости и категориям (с сортировкой))
-    public static void sortGoodByCategoryAndPrice (List < Good > goodList, String path){
+    public void sortGoodByCategoryAndPrice (List < Good > goodList, String path){
         System.out.println("Before sort: " + goodList);
         System.out.println();
         goodList = getGoodListFromFile(path);
@@ -87,7 +83,7 @@ public class GoodService {
 
     /** ************************************* Реализация п.4 - Добавить товар ************************************* */
     //Ввод товара и создание коллекции  (4 - Добавить товар)
-    public static Good entryGood(String path, int id) {
+    public Good entryGood(String path, int id) {
 
         Scanner scanner = new Scanner(System.in);
 
@@ -116,7 +112,7 @@ public class GoodService {
 //        System.out.println("Пустой список?: " + goodList);
         goodList.add(goodNew);//добавление нового (введенного) товара в коллекцию
         System.out.println("Новый (добавляемый) товар: " + goodList);
-        writeGood(goodList, path);//вызов метода, сериализующего товар
+        writeGood(goodList);//вызов метода, сериализующего товар
         return goodNew; //нигде не используется
     }
 
@@ -148,7 +144,7 @@ public class GoodService {
 
                 //Создание объекта типа GoodRepository и вызов метода для сериализации списка товаров
                 GoodRepository goodRepository = new GoodRepository();
-                goodRepository.serializeGood(goodList, path);
+                goodRepository.saveGood(goodList, path);
             }
         }
     }

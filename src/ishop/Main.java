@@ -14,8 +14,8 @@ public class Main {
         String userPath = "UserList.txt";
         String goodPath = "GoodList.txt";
 
-        List<User> userList = getUserListFromFile(userPath);
-        List<Good> goodList = getGoodListFromFile(goodPath);
+//        List<User> userList = getUserListFromFile(userPath);
+//        List<Good> goodList = getGoodListFromFile(goodPath);
 
         baseMenu(userList, userPath, goodList, goodPath);
     }
@@ -26,7 +26,7 @@ public class Main {
      */
 
     //Метод, реализующий основное меню
-    public static void baseMenu(List<User> userList, String userPath, List<Good> goodList, String goodPath) {
+    public static void baseMenu(List<User> userList, String userPath, String goodPath) {
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running) {
@@ -46,9 +46,9 @@ public class Main {
 
 
                     if (!loginExist.equals("vic_tut") && passRight.equals("true")) {
-                        menuClient(userList, userPath, goodList, goodPath, loginExist);
+                        menuClient(userList, userPath, goodPath, loginExist);
                     } else {
-                        menuAdmin(userList, userPath, goodList, goodPath);
+                        menuAdmin(userList, userPath, goodPath);
                     }
                     break;
                 case "0":
@@ -64,7 +64,7 @@ public class Main {
     }
 
     //Метод, реализующий меню пользователя с правами администратора
-    public static void menuAdmin(List<User> userList, String userPath, List<Good> goodList, String goodPath) {
+    public static void menuAdmin(List<User> userList, String userPath, String goodPath) {
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running) {

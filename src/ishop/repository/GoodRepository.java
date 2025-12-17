@@ -1,17 +1,19 @@
 package ishop.repository;
 
 import ishop.entity.Good;
-import ishop.entity.User;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GoodRepository {
 
-    //Метод, выполняющий сериализацию товаров
-    public static void serializeGood(List<Good> goodList, String path){
+    private final static String GOOD_PATH = "GoodList.txt";
 
-        try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(path))) {
+    //Метод, выполняющий сериализацию товаров
+    public void saveGood(List<Good> goodList) {
+
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(GOOD_PATH))) {
             objectOutputStream.writeObject(goodList);
         } catch (IOException e) { //Обрабатываем все возможные ошибки ввода-вывода
             throw new RuntimeException(e); //Выкидываем исходное исключение в RuntimeException, чтобы не скрывать информацию об ошибке
@@ -19,12 +21,26 @@ public class GoodRepository {
     }
 
     //Метод, выполняющий десериализацию файла с товарами
-    public static List<Good> deserializeGood(String path){
+    public List<Good> findAllGoods() {
 
-        try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path))) {
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(GOOD_PATH))) {
             List<Good> goodList = (List<Good>) objectInputStream.readObject();
             return goodList;
-        } catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
+            return new ArrayList<>();
+        } catch (IOException e) {// Если файл отсутствует или недоступен
+            throw new RuntimeException(e);//Выкидываем исходное исключение в RuntimeException, чтобы не скрывать информацию об ошибке
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Good> findGoodById(Long id) {
+
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(GOOD_PATH))) {
+            List<Good> goodList = (List<Good>) objectInputStream.readObject();
+            return goodList;
+        } catch (FileNotFoundException e) {
             return new ArrayList<>();
         } catch (IOException e) {// Если файл отсутствует или недоступен
             throw new RuntimeException(e);//Выкидываем исходное исключение в RuntimeException, чтобы не скрывать информацию об ошибке
