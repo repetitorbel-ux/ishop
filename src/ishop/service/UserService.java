@@ -6,6 +6,10 @@ import ishop.entity.User;
 import ishop.repository.GoodRepository;
 import ishop.repository.UserRepository;
 
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 import static ishop.repository.UserRepository.deserialize;
@@ -16,7 +20,10 @@ public class UserService {
     //Метод, создающий пользователя-админа
     public static void createAdmin(String path) {
         UserRepository userRepository = new UserRepository();
-        User userAdmin = new User(1, "vic_tut", "12345", "Viktor", "Ivanov", "1974-04-25", Role.ADMIN);
+
+        LocalDate adminBierthday = LocalDate.of(1974, 04, 25);
+
+        User userAdmin = new User(1, "vic_tut", "12345", "Viktor", "Ivanov", adminBierthday, Role.ADMIN);
         List<User> userList = new ArrayList<>();
         userList.add(userAdmin);
         userRepository.serialize(userList, path);
@@ -146,7 +153,7 @@ public class UserService {
                     break;
                 case "5":
                     System.out.println("Введите день рождения:");
-                    user.setBirthday(scanner.nextLine());
+                    user.setBirthday(LocalDate.parse(scanner.nextLine()));
                     break;
                 case "0":
                     System.out.println("Выход из меню обновления товара.");
@@ -224,7 +231,7 @@ public class UserService {
                     break;
                 case "5":
                     System.out.println("Введите день рождения:");
-                    user.setBirthday(scanner.nextLine());
+                    user.setBirthday(LocalDate.parse(scanner.nextLine()));
                     break;
                 case "0":
                     System.out.println("Выход из меню обновления товара.");
@@ -288,8 +295,20 @@ public class UserService {
             System.out.println("Введите surname");
             String surname = scanner.nextLine();
 
-            System.out.println("Введите birthday");
-            String birthdDay = scanner.nextLine();
+            System.out.println("Введите день рождения в формате yyyy-mm-dd");
+            boolean running2 = true;
+            LocalDate birthdDay = null;
+            while (running2) {
+                try {
+                    String inputBirthday = scanner.nextLine();
+                    DateTimeFormatter formatBirthdDay = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    birthdDay = LocalDate.parse(inputBirthday,formatBirthdDay);//проверяем соответствует ли формат ввода ДР шаблону
+                    System.out.println(birthdDay);
+                    running2 = false;
+                }catch (DateTimeException e){//нашел в классе LocalDate
+                    System.out.println("Неверный формат даты. Попробуйте еще раз (yyyy-MM-dd)");
+                }
+            }
 
             //Создание "введенного" пользователя
             User user = new User(id, newLogin, pass, name, surname, birthdDay, Role.USER);
@@ -338,7 +357,7 @@ public class UserService {
     public static String findByLogin(List<User> tempList, String login) {
 
         boolean loginFound = false;
-        String newLogin = login;//для того, чтобы передать значение за пределы цикла
+        String newLogin = login;//переменная для того, чтобы передать значение за пределы цикла
         for (int i = 0; i < tempList.size(); i++) {
             String loginExist = tempList.get(i).getLogin();
             if (newLogin.equals(loginExist)) {
@@ -354,6 +373,7 @@ public class UserService {
     }
 
     //Метод, проверяющий введенный пароль
+    /** !!!"Сделать проверку на null!!!*/
     public static String checkPassword(List<User> tempList, String pass) {
 
         boolean passFound = false;
