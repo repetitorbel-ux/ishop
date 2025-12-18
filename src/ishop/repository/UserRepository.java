@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository {
+    private static final String USER_PATH = "UserList.txt";
 
     /** Создать класс(ы) с исключением для вывода теста ошибки???? */
 
     //Метод, выполняющий сериализацию
-    public static void serialize(List<User> userList, String nameOfFile){
+    public static void serialize(List<User> userList){
 
-        try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(nameOfFile))) {
+        try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(USER_PATH))) {
             objectOutputStream.writeObject(userList);
         } catch (IOException e) { //Обрабатываем все возможные ошибки ввода-вывода
             throw new RuntimeException(e); //Выкидываем исходное исключение в RuntimeException, чтобы не скрывать информацию об ошибке
@@ -21,9 +22,9 @@ public class UserRepository {
 
 
     //Метод, выполняющий десериализацию
-    public static List<User> deserialize(String nameOfFile){
+    public static List<User> deserialize(){
 
-        try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(nameOfFile))) {
+        try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(USER_PATH))) {
             List<User> userList = (List<User>) objectInputStream.readObject();
             return userList;
         } catch (FileNotFoundException e){

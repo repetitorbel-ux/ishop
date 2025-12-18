@@ -2,6 +2,8 @@ package ishop;
 
 import ishop.entity.Good;
 import ishop.entity.User;
+import ishop.service.GoodService;
+import ishop.service.UserService;
 
 import java.util.List;
 import java.util.Scanner;
@@ -11,13 +13,7 @@ import static ishop.service.UserService.*;
 
 public class Main {
     public static void main(String[] args) {
-        String userPath = "UserList.txt";
-        String goodPath = "GoodList.txt";
-
-        List<User> userList = getUserListFromFile(userPath);
-        List<Good> goodList = getGoodListFromFile(goodPath);
-
-        baseMenu(userList, userPath, goodList, goodPath);
+        baseMenu();
     }
 
     /**
@@ -26,7 +22,9 @@ public class Main {
      */
 
     //Метод, реализующий основное меню
-    public static void baseMenu(List<User> userList, String userPath, List<Good> goodList, String goodPath) {
+    //public static void baseMenu(List<User> userList, String userPath, List<Good> goodList, String goodPath)
+    public static void baseMenu() {
+        UserService userService = new UserService();
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running) {
@@ -34,26 +32,34 @@ public class Main {
             String x = scanner.nextLine();
             switch (x) {
                 case "1":
-                    createUser(userList, userPath);
-                    userList = getUserListFromFile(userPath);//актуализируем список после создания первого пользователя-админа
+                    userService.createUser();
+//                    userList = getUserListFromFile(userPath);//актуализируем список после создания первого пользователя-админа
                     break;
                 case "2":
                     String login = askLogin();
-                    String loginExist = findByLogin(userList, login);
+                    String loginExist = userService.findByLogin(login);//возвратили логин
 
                     String passExist = null;
                     if(!(loginExist == null)){
-                        String pass = askPassword();
+                        String pass = userService.askPassword();
                         passExist = pass;
                     }
-                    String passRight = checkPassword(userList, passExist);
-
-
-                    if (!loginExist.equals("vic_tut") && passRight.equals("true")) {
-                        menuClient(userList, userPath, goodList, goodPath, loginExist);
-                    } else {
-                        menuAdmin(userList, userPath, goodList, goodPath);
+                    try {
+                        String passRight = userService.checkPassword3(loginExist, passExist);
+                    }catch (RuntimeException e){
+                        baseMenu();
                     }
+
+
+//                    String passRight2 = checkPassword2(userList, userPath);
+
+//                    if (loginExist.equals("vic_tut") && passRight.equals(passExist)) {
+//                        menuAdmin(userList, userPath, goodList, goodPath);
+//                    }
+//                    else {
+//                        askPassword();
+//                        menuClient(userList, userPath, goodList, goodPath, loginExist);
+//                    }
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -69,6 +75,8 @@ public class Main {
 
     //Метод, реализующий меню пользователя с правами администратора
     public static void menuAdmin(List<User> userList, String userPath, List<Good> goodList, String goodPath) {
+        UserService userService = new UserService();
+        GoodService goodService = new GoodService();
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running) {
@@ -85,32 +93,32 @@ public class Main {
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
-                    showGoods(goodList, goodPath);
+                    goodService.showGoods();
                     break;
                 case "2":
                     entryCategory(goodList, goodPath);
                     break;
                 case "3":
-                    sortGoodByCategoryAndPrice(goodList, goodPath);
+                    goodService.sortGoodByCategoryAndPrice();
                     break;
                 case "4":
-                    goodList = getGoodListFromFile(goodPath);//актуализируем список после добавления первого товара
-                    addGood(goodList, goodPath);
+//                    goodList = getGoodListFromFile();//актуализируем список после добавления первого товара
+                    goodService.addGood(goodList, goodPath);
                     break;
                 case "5":
-                    updateGoodById(goodList, goodPath);
+                    goodService.updateGoodById();
                     break;
                 case "6":
-                    delGoodById(goodList, goodPath);
+                    goodService.delGoodById();
                     break;
                 case "7":
-                    showUsers(userList, userPath);
+                    userService.showUsers();
                     break;
                 case "8":
-                    entryLoginUser(userList, userPath);
+                    userService.entryLoginUser();
                     break;
                 case "9":
-                    updateUserById(userList, userPath);
+                    userService.updateUserById();
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -126,16 +134,18 @@ public class Main {
 
     //Меню запроса категории товара (2 - Показать товары по категориям)
     public static void entryCategory(List<Good> goodList, String path) {
-
+        GoodService goodService = new GoodService();
         Scanner scanner = new Scanner(System.in);
         System.out.println();
         System.out.println("Введите категорию товара");
         String entryCategory = scanner.nextLine();
-        checkCategory(goodList, path, entryCategory);
+        goodService.checkCategory(entryCategory);
     }
 
     //Метод, реализующий меню клиента (авторизованного пользователя)
     public static void menuClient(List<User> userList, String userPath, List<Good> goodList, String goodPath, String login) {
+        UserService userService = new UserService();
+        GoodService goodService = new GoodService();
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running) {
@@ -147,16 +157,16 @@ public class Main {
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
-                    showGoods(goodList, goodPath);
+                    goodService.showGoods();
                     break;
                 case "2":
                     entryCategory(goodList, goodPath);
                     break;
                 case "3":
-                    sortGoodByCategoryAndPrice(goodList, goodPath);
+                    goodService.sortGoodByCategoryAndPrice();
                     break;
                 case "4":
-                    updateCurrentUser(userList, userPath, login);
+                    userService.updateCurrentUser(login);
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");

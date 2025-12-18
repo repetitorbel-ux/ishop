@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GoodRepository {
+    private static final String GOOD_PATH = "GoodList.txt";
 
     //Метод, выполняющий сериализацию товаров
-    public static void serializeGood(List<Good> goodList, String path){
+    public void saveGood(List<Good> goodList){
 
-        try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(path))) {
+        try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(GOOD_PATH))) {
             objectOutputStream.writeObject(goodList);
         } catch (IOException e) { //Обрабатываем все возможные ошибки ввода-вывода
             throw new RuntimeException(e); //Выкидываем исходное исключение в RuntimeException, чтобы не скрывать информацию об ошибке
@@ -19,9 +20,9 @@ public class GoodRepository {
     }
 
     //Метод, выполняющий десериализацию файла с товарами
-    public static List<Good> deserializeGood(String path){
+    public List<Good> getAllGoods(){
 
-        try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path))) {
+        try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(GOOD_PATH))) {
             List<Good> goodList = (List<Good>) objectInputStream.readObject();
             return goodList;
         } catch (FileNotFoundException e){

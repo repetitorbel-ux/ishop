@@ -2,10 +2,16 @@ package ishop;
 
 public class Readme {
     /*
+    public void writeGood() сделать не void, а List<Good>???
+    private static Optional<Good> findMaxGoodId() - сделать not static?
+     */
+
+
+    /*
     1) сделать проверку возраста
     2) правильные exception
     3) exception в других проверках?
-    4) объединить askLogin() и findByLogin()?
+
 
     5)check pass != null
 
