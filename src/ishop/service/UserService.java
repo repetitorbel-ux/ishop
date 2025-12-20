@@ -1,101 +1,206 @@
 package ishop.service;
 
 import ishop.constants.Role;
-import ishop.entity.Good;
 import ishop.entity.User;
-import ishop.repository.GoodRepository;
 import ishop.repository.UserRepository;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
-
-import static ishop.repository.UserRepository.deserialize;
-import static ishop.service.GoodService.checkCategory;
 
 public class UserService {
 
+    /******************************* Вспомогательные методы*******************************/
     //Метод, создающий пользователя-админа
-    public static void createAdmin(String path) {
+    public void createAdmin() {
         UserRepository userRepository = new UserRepository();
 
-        LocalDate adminBierthday = LocalDate.of(1974, 04, 25);
+        LocalDate adminBirthday = LocalDate.of(1974, 04, 25);
 
-        User userAdmin = new User(1, "vic_tut", "12345", "Viktor", "Ivanov", adminBierthday, Role.ADMIN);
+        User userAdmin = new User(1, "vic_tut", "12345", "Viktor", "Ivanov", adminBirthday, Role.ADMIN);
         List<User> userList = new ArrayList<>();
         userList.add(userAdmin);
-        userRepository.serialize(userList, path);
+        userRepository.saveUser(userList);
         System.out.println("Администратор создан.");
     }
 
-    //Метод, получающий список уже существующих пользователей
-    public static List<User> getUserListFromFile(String path) {
-        List<User> tempList = deserialize(path);//В переменную типа List, в которую десериализуем файл с пользователями
+    //Метод, получающий список существующих пользователей
+    public List<User> getUserListFromFile() {
+        UserRepository userRepository = new UserRepository();
+        List<User> tempList = userRepository.getAllUsers();//В переменную типа List, в которую десериализуем файл с пользователями
 //        System.out.println(tempList);
         return tempList;
     }
 
     //Метод, сериализующий пользователя
-    public static void writeUser(List<User> userList, String userPath) {
+    public void writeUser(List<User> userList) {
         UserRepository userRepository = new UserRepository();
-        userRepository.serialize(userList, userPath);
+        userRepository.saveUser(userList);
     }
 
-
-    /**************************** Реализация п.7 меню Admin - Показать всех пользователей *****************************/
-
-    //Метод, выводящий всех пользователей (7 - Показать всех пользователей)
-    public static void showUsers(List<User> userList, String userPath) {
-        userList = getUserListFromFile(userPath);
-        System.out.println("Список пользователей:");
-        for (User user : userList) {
-            System.out.println(user);
-        }
+    //Метод поиска максимального значения в списке
+    private Optional<User> findMaxId(List<User> userList) {
+        return userList.stream().max(Comparator.comparing(user -> {
+            return user.getId();
+        }));
     }
-    /** ************************************************************************************************************* */
 
-
-    /*************************** Реализация п.8 меню Admin - Найти пользователя по логину ******************************/
-    //Меню запроса логина
-    public static void entryLoginUser(List<User> userList, String userPath) {
+    //Метод поверки логина на "пустой" и уникальность
+    public String checkLogin(){
+        UserService userService = new UserService();
+        List<User> userExistList = userService.getUserListFromFile();
         Scanner scanner = new Scanner(System.in);
-        System.out.println();
-        System.out.println("Введите логин пользователя");
-        String entryLogin = scanner.nextLine();
-        checkLogin(userList, userPath, entryLogin);
+        //********Блок проверки на уникальность логина
+        String newLogin = "tempLogin";
+        boolean running = true;
+        while (running) {
+            boolean loginFound = false;
+            System.out.println("Введите login");
+            String login = scanner.nextLine();
+            if (login == null) {
+                throw new NullPointerException("login must not be null");
+            }
+            newLogin = login;
+            if (!login.isBlank()){
+                for (int i = 0; i < userExistList.size(); i++) {
+                    String loginExist = userExistList.get(i).getLogin();
+                    if (newLogin.equals(loginExist)) {
+                        loginFound = true;
+                    }
+                }
+                if (loginFound == true) {
+                    System.out.println("Логин " + "'" + newLogin + "'" + " уже существует. Придумайте другой логин");
+                } else {
+                    running = false;
+                }
+            }else {
+                System.out.println("Логин " + "'" + newLogin + "'" + " не может быть пустым. Введите корректный логин");
+            }
+
+        }
+        return newLogin;
+    }
+    //*****************************************************************************************************************/
+
+
+    /**********************************************1 - Регистрация (создание) пользователя********************************************/
+    //Метод, создающий пользователей
+    public void createUser() {
+
+        UserService userService = new UserService();
+
+        //Считывание актуального списка пользователей
+        List<User> userExistList = userService.getUserListFromFile();
+
+        //Проверка, если список пустой, то вызываем метод, создающий пользователя-админа
+        if (userExistList.isEmpty()) {
+            createAdmin();
+        }
+
+        //Проверка десериализованного файла: если !null - ввод данных
+        Optional<User> idUserMax = findMaxId(userExistList);
+        if (idUserMax.isPresent()) {
+            User idMax = idUserMax.get();
+            System.out.println("idMax = " + idMax.getId());
+            int id = idUserMax.get().getId() + 1;
+            System.out.println("Следующий id = " + id);
+
+            Scanner scanner = new Scanner(System.in);
+
+            //Проверка логина на уникальность
+            String newLogin = checkLogin();
+
+//            checkLoginNull(newLogin);
+
+            System.out.println("Введите password");
+            String pass = scanner.nextLine();
+
+            System.out.println("Введите name");
+            String name = scanner.nextLine();
+
+            System.out.println("Введите surname");
+            String surname = scanner.nextLine();
+
+            System.out.println("Введите день рождения в формате yyyy-mm-dd");
+            boolean running2 = true;
+            LocalDate birthdDay = null;
+            while (running2) {
+                try {
+                    String inputBirthday = scanner.nextLine();
+                    DateTimeFormatter formatBirthdDay = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    birthdDay = LocalDate.parse(inputBirthday, formatBirthdDay);//проверяем соответствует ли формат ввода ДР шаблону
+                    System.out.println(birthdDay);
+                    running2 = false;
+                } catch (DateTimeException e) {//нашел в классе LocalDate
+                    System.out.println("Неверный формат даты. Попробуйте еще раз (yyyy-MM-dd)");
+//                    throw e;
+                }
+            }
+
+            //Создание "введенного" пользователя
+            User user = new User(id, newLogin, pass, name, surname, birthdDay, Role.USER);
+
+            //Создание коллекции пользователей
+            List<User> userList = new ArrayList<>();
+
+            //Добавление в коллекцию списка из существубщих пользователей
+            for (int i = 0; i < userExistList.size(); i++) {
+                userList.add(userExistList.get(i));
+            }
+
+            //Добавление нового пользователя в список
+            userList.add(user);
+
+            //Создание объекта типа UserRepository и вызов метода для сериализации списка
+            UserRepository userRepository = new UserRepository();
+            userRepository.saveUser(userList);
+        }
+    }
+    //*****************************************************************************************************************/
+
+
+    /********************** Реализация п.2 baseMenu() - Авторизация ********************/
+    //Метод запроса логина при регистрации пользователя
+    public String askLogin() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите login");
+        String login = scanner.nextLine();
+        return login;
     }
 
-    public static void checkLogin(List<User> userList, String userPath, String targetLogin) {
-        userList = getUserListFromFile(userPath);
-        System.out.println();
-        String loginNotExist = null;
-        for (User user : userList) {
-            if (user.getLogin().equals(targetLogin)) {
-                loginNotExist = targetLogin;
+    //Метод, отвечающий за поиск пользователя по логину
+    public String findByLogin(String login) {
+        List<User> userList = getUserListFromFile();
+        boolean loginFound = false;
+        String newLogin = login;//переменная для того, чтобы передать значение за пределы цикла
+        for (int i = 0; i < userList.size(); i++) {
+            String loginExist = userList.get(i).getLogin();
+            if (newLogin.equals(loginExist)) {
+                loginFound = true;
             }
         }
-        if (loginNotExist == null) {
-            System.out.println("Пользователя с логином " + '\'' + targetLogin + '\'' + " не существует. Введите корректный логин");
-        } else showUsersByLogin(userList, targetLogin);
-    }
-
-    //Метод, выводящий пользователя с заданным логином (8 - Найти пользователя по логину)
-    public static void showUsersByLogin(List<User> userList, String targetLogin) {
-        System.out.println("Пользователь для редактирования " + targetLogin + ": ");
-        for (User user : userList) {
-            if (user.getLogin().equals(targetLogin)) {
-                System.out.println(user);
-            }
+        if (loginFound == true) {
+            return newLogin;
+        } else {
+            System.out.println("Пользователя с логином " + "'" + newLogin + "'" + " не существует. Пройдите регистрацию");
+            return null;
         }
     }
-    /** ************************************************************************************************************* */
 
-    /** ********************* Реализация п.4 меню Client - Редактировать информацию о пользователе *********************/
-    public static void updateCurrentUser(List<User> userList, String userPath, String targetLogin) {
+    //Метод запроса пароля при регистрации пользователя
+    public String askPassword() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите пароль");
+        String pass = scanner.nextLine();
+        return pass;
+    }
 
-        userList = getUserListFromFile(userPath);
+
+    /********************** Реализация п.4 меню Client - Редактировать информацию о пользователе********************/
+    public void updateCurrentUser(String targetLogin) {//List<User> userList, String userPath,
+
+        List<User> userList = getUserListFromFile();
 
         User currentUser = null;
         for (User user : userList) {
@@ -107,13 +212,13 @@ public class UserService {
 
         changeUserItSelf(currentUser);  //Вызываем метод, который изменяет объект внутри списка
 
-        writeUser(userList, userPath); //Сохраняем изменения в файл
+        writeUser(userList); //Сохраняем изменения в файл
 
         System.out.println("\nИзменения сохранены.");
     }
 
     //Метод поиска пользователя по имени
-//    public static User findByLogin2(List<User> userList, String login) {
+//    public User findByLogin2(List<User> userList, String login) {
 //        for (User user : userList) {
 //            if (user.getLogin().equals(login)) return user;
 //        }
@@ -121,7 +226,7 @@ public class UserService {
 //    }
 
     //Метод, изменяющий информацию о пользователе (администраторский доступ)
-    public static void changeUserItSelf(User user) {
+    public void changeUserItSelf(User user) {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
@@ -163,12 +268,63 @@ public class UserService {
             }
         }
     }
-    /** ************************************************************************************************************* */
+    //************************************************************************************************************* */
 
-    /** ********************* Реализация п.9 меню Admin - Редактировать информацию о пользователе *********************/
+    /**************************** Реализация п.7 меню Admin - Показать всех пользователей *****************************/
+    //Метод, выводящий всех пользователей (7 - Показать всех пользователей)
+    public void showUsers() {
+//        UserService userService = new UserService();
+        List<User> userList = getUserListFromFile();
+        System.out.println("Список пользователей:");
+        for (User user : userList) {
+            System.out.println(user);
+        }
+    }
+    //*****************************************************************************************************************/
+
+
+    /*************************** Реализация п.8 меню Admin - Найти пользователя по логину ******************************/
+    //Меню запроса логина
+    public void entryLoginUser() {//List<User> userList, String userPath
+//        List<User> userList = getUserListFromFile();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.println("Введите логин пользователя");
+        String entryLogin = scanner.nextLine();
+        checkLogin(entryLogin);
+    }
+
+    public void checkLogin(String targetLogin) {
+        List<User> userList = getUserListFromFile();
+        System.out.println();
+        String loginNotExist = null;
+        for (User user : userList) {
+            if (user.getLogin().equals(targetLogin)) {
+                loginNotExist = targetLogin;
+            }
+        }
+        if (loginNotExist == null) {
+            System.out.println("Пользователя с логином " + '\'' + targetLogin + '\'' + " не существует. Введите корректный логин");
+        } else showUsersByLogin(userList, targetLogin);
+    }
+
+    //Метод, выводящий пользователя с заданным логином (8 - Найти пользователя по логину)
+    public void showUsersByLogin(List<User> userList, String targetLogin) {
+        System.out.println("Пользователь для редактирования " + targetLogin + ": ");
+        for (User user : userList) {
+            if (user.getLogin().equals(targetLogin)) {
+                System.out.println(user);
+            }
+        }
+    }
+    //*****************************************************************************************************************/
+
+
+       /********************** Реализация п.9 меню Admin - Редактировать информацию о пользователе*********************/
     //Метод для выбора товара по id, изменения информации о пользователе и записи изменений в файл
-    public static void updateUserById(List<User> userList, String userPath) {
-        userList = getUserListFromFile(userPath);
+    public void updateUserById() {//List<User> userList, String userPath
+
+        List<User> userList = getUserListFromFile();
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("\nВведите id пользователя: ");
@@ -181,16 +337,15 @@ public class UserService {
         }
 
         System.out.println("Выбранный пользователь: " + user);
-
         changeUser(user);  //Вызываем метод, который изменяет объект внутри списка
 
-        writeUser(userList, userPath); //Сохраняем изменения в файл
+        writeUser(userList); //Сохраняем изменения в файл
 
         System.out.println("\nИзменения сохранены.");
     }
 
     //Метод поиска пользователя по id
-    public static User findById(List<User> userList, int id) {
+    public User findById(List<User> userList, int id) {
         for (User user : userList) {
             if (user.getId() == id) return user;
         }
@@ -198,7 +353,7 @@ public class UserService {
     }
 
     //Метод, изменяющий информацию о пользователе (администраторский доступ)
-    public static void changeUser(User user) {
+    public void changeUser(User user) {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
@@ -241,145 +396,17 @@ public class UserService {
             }
         }
     }
-    /** ************************************************************************************************************* */
+    //************************************************************************************************************** */
 
 
-    /********************************************** Создание пользователей ********************************************/
-    //Метод, создающий пользователей
-    public static void createUser(List<User> tempList, String path) {
-
-        //Проверка, если список пустой, то вызываем метод, создающий пользователя-админа
-        if (tempList.isEmpty()) {
-            createAdmin(path);
-        }
-
-        /** Сделать через try-catch, чтобы при null выбрасывалось исключение???? */
-        //Проверка десериализованного файла: если !null - ввод данных
-        Optional<User> idUserMax = findMaxId(tempList);
-        if (idUserMax.isPresent()) {
-            User idMax = idUserMax.get();
-            System.out.println("idMax = " + idMax.getId());
-            int id = idUserMax.get().getId() + 1;
-            System.out.println("Следующий id = " + id);
-
-            Scanner scanner = new Scanner(System.in);
-
-            /** Вынести в отдельный метод???? */
-            //********Блок проверки на уникальность логина
-            String newLogin = "";
-            boolean running = true;
-            while (running) {
-                boolean loginFound = false;
-                System.out.println("Введите login");
-                String login = scanner.nextLine();
-                newLogin = login;
-                for (int i = 0; i < tempList.size(); i++) {
-                    String loginExist = tempList.get(i).getLogin();
-                    if (newLogin.equals(loginExist)) {
-                        loginFound = true;
-                    }
-                }
-                if (loginFound == true) {
-                    System.out.println("Логин " + "'" + newLogin + "'" + " уже существует. Придумайте другой логин");
-                } else {
-                    running = false;
-                }
-            }
-
-            System.out.println("Введите password");
-            String pass = scanner.nextLine();
-
-            System.out.println("Введите name");
-            String name = scanner.nextLine();
-
-            System.out.println("Введите surname");
-            String surname = scanner.nextLine();
-
-            System.out.println("Введите день рождения в формате yyyy-mm-dd");
-            boolean running2 = true;
-            LocalDate birthdDay = null;
-            while (running2) {
-                try {
-                    String inputBirthday = scanner.nextLine();
-                    DateTimeFormatter formatBirthdDay = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                    birthdDay = LocalDate.parse(inputBirthday,formatBirthdDay);//проверяем соответствует ли формат ввода ДР шаблону
-                    System.out.println(birthdDay);
-                    running2 = false;
-                }catch (DateTimeException e){//нашел в классе LocalDate
-                    System.out.println("Неверный формат даты. Попробуйте еще раз (yyyy-MM-dd)");
-                }
-            }
-
-            //Создание "введенного" пользователя
-            User user = new User(id, newLogin, pass, name, surname, birthdDay, Role.USER);
-
-            //Создание коллекции пользователей
-            List<User> userList = new ArrayList<>();
-
-            //Добавление в коллекцию списка из существубщих пользователей
-            for (int i = 0; i < tempList.size(); i++) {
-                userList.add(tempList.get(i));
-            }
-
-            //Добавление нового пользователя в список
-            userList.add(user);
-
-            //Создание объекта типа UserRepository и вызов метода для сериализации списка
-            UserRepository userRepository = new UserRepository();
-            userRepository.serialize(userList, path);
-        }
-    }
-
-    //Метод поиска максимального значения в списке
-    private static Optional<User> findMaxId(List<User> userList) {
-        return userList.stream().max(Comparator.comparing(user -> {
-            return user.getId();
-        }));
-    }
-
-    //Метод запроса логина при регистрации пользователя
-    public static String askLogin() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите login");
-        String login = scanner.nextLine();
-        return login;
-    }
-
-    //Метод запроса пароля при регистрации пользователя
-    public static String askPassword() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите пароль");
-        String pass = scanner.nextLine();
-        return pass;
-    }
-
-    //Метод, отвечающий за поиск пользователя по логину
-    public static String findByLogin(List<User> tempList, String login) {
-
-        boolean loginFound = false;
-        String newLogin = login;//переменная для того, чтобы передать значение за пределы цикла
-        for (int i = 0; i < tempList.size(); i++) {
-            String loginExist = tempList.get(i).getLogin();
-            if (newLogin.equals(loginExist)) {
-                loginFound = true;
-            }
-        }
-        if (loginFound == true) {
-            return newLogin;
-        } else {
-            System.out.println("Пользователя с логином " + "'" + newLogin + "'" + " не существует. Пройдите регистрацию");
-            return null;
-        }
-    }
-
+    /**Проверка пароля Доделать*/
     //Метод, проверяющий введенный пароль
-    /** !!!"Сделать проверку на null!!!*/
-    public static String checkPassword(List<User> tempList, String pass) {
-
+    public String checkPassword(String login, String pass) {
+        List<User> userList = getUserListFromFile();
         boolean passFound = false;
         String passFromUser = pass;
-        for (int i = 0; i < tempList.size(); i++) {
-            String passExist = tempList.get(i).getPassword();
+        for (int i = 0; i < userList.size(); i++) {
+            String passExist = userList.get(i).getPassword();
             if (passFromUser.equals(passExist)) {
                 passFound = true;
             }
@@ -388,14 +415,69 @@ public class UserService {
             return "true";
         } else {
             System.out.println("Введен не верный пароль, повторите ввод пароля");
+            boolean running = true;
+            while (running) {
+                askPassword();
+                if (passFound == true) {
+                    running = false;
+                    break;
+                }
+            }
             return "false";
         }
     }
 
+    public String checkPassword3(String user, String pass) {
+        List<User> userList = getUserListFromFile();
+        String passFound = pass;
+        for (User u : userList) {
+            if (u.getLogin().equals(user) && u.getPassword().equals(pass)) {
+                passFound = pass;
+                break;
+            } else {
+                System.out.println("Введен не верный пароль, повторите ввод пароля");
+                boolean running = true;
+                while (running) {
+                    String currentPass = askPassword();
+                    if (currentPass.equals(passFound)) {
+                        running = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return passFound;
+    }
+
+    public String checkPassword2(List<User> tempList, String path) {
+        boolean running = true;
+        boolean passFound = false;
+        while (running) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Введите пароль");
+            String pass = scanner.nextLine();
+            for (int i = 0; i < tempList.size(); i++) {
+                String passExist = tempList.get(i).getPassword();
+                if (pass.equals(passExist)) {
+                    passFound = true;
+                }
+            }
+            if (passFound == true) {
+                running = false;
+                return "true";
+            } else {
+                System.out.println("Введен не верный пароль, повторите ввод пароля");
+                return "false";
+            }
+        }
+        return "true";
+    }
+
+
 }
 /*
 //Лишний метод
-    public static boolean checkAccess(List<User> userList, String userPath) {
+    public boolean checkAccess(List<User> userList, String userPath) {
         userList = getUserListFromFile(userPath);
         boolean result = false;
         for (User user : userList) {
@@ -406,4 +488,26 @@ public class UserService {
         }
         return result;
     }
+
+    public String checkLoginNull(String login){
+        if (login == null) {
+            throw new NullPointerException("login must not be null");
+        }
+        return login;
+    }
  */
+/*
+while (running2) {
+                try {
+                    String inputBirthday = scanner.nextLine();
+                    DateTimeFormatter formatBirthdDay = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    birthdDay = LocalDate.parse(inputBirthday, formatBirthdDay);//проверяем соответствует ли формат ввода ДР шаблону
+                    System.out.println(birthdDay);
+                    running2 = false;
+                } catch (DateTimeException e) {//нашел в классе LocalDate
+                    System.out.println("Неверный формат даты. Попробуйте еще раз (yyyy-MM-dd)");
+                    throw e;
+                }
+            }
+ */
+
