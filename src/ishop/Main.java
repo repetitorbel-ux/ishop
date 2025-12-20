@@ -16,11 +16,7 @@ public class Main {
         baseMenu();
     }
 
-    /**
-     * Основное (первое) меню. Разделить функционал "прорисовки" и логики??? (пока не получилось)
-     * Избавиться от "лишних" параметров метода, возможно???
-     */
-
+    /*** Основное (первое) меню. Разделить функционал "прорисовки" и логики??? (пока не получилось) */
     //Метод, реализующий основное меню
     //public static void baseMenu(List<User> userList, String userPath, List<Good> goodList, String goodPath)
     public static void baseMenu() {
@@ -36,7 +32,7 @@ public class Main {
 //                    userList = getUserListFromFile(userPath);//актуализируем список после создания первого пользователя-админа
                     break;
                 case "2":
-                    String login = askLogin();
+                    String login = userService.askLogin();
                     String loginExist = userService.findByLogin(login);//возвратили логин
 
                     String passExist = null;
@@ -44,22 +40,23 @@ public class Main {
                         String pass = userService.askPassword();
                         passExist = pass;
                     }
+                    String passRight = "null";
                     try {
-                        String passRight = userService.checkPassword3(loginExist, passExist);
+                        String passGet = userService.checkPassword(loginExist, passExist);
+                        passRight = passGet;
                     }catch (RuntimeException e){
                         baseMenu();
                     }
 
-
 //                    String passRight2 = checkPassword2(userList, userPath);
 
-//                    if (loginExist.equals("vic_tut") && passRight.equals(passExist)) {
-//                        menuAdmin(userList, userPath, goodList, goodPath);
-//                    }
-//                    else {
+                    if (loginExist.equals("vic_tut") && passRight.equals(passExist)) {
+                        menuAdmin();
+                    }
+                    else {
 //                        askPassword();
-//                        menuClient(userList, userPath, goodList, goodPath, loginExist);
-//                    }
+                        menuClient(loginExist);
+                    }
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -74,7 +71,7 @@ public class Main {
     }
 
     //Метод, реализующий меню пользователя с правами администратора
-    public static void menuAdmin(List<User> userList, String userPath, List<Good> goodList, String goodPath) {
+    public static void menuAdmin() {
         UserService userService = new UserService();
         GoodService goodService = new GoodService();
         boolean running = true;
@@ -96,14 +93,14 @@ public class Main {
                     goodService.showGoods();
                     break;
                 case "2":
-                    entryCategory(goodList, goodPath);
+                    entryCategory();
                     break;
                 case "3":
                     goodService.sortGoodByCategoryAndPrice();
                     break;
                 case "4":
 //                    goodList = getGoodListFromFile();//актуализируем список после добавления первого товара
-                    goodService.addGood(goodList, goodPath);
+//                    goodService.addGood(goodList);
                     break;
                 case "5":
                     goodService.updateGoodById();
@@ -133,7 +130,7 @@ public class Main {
     }
 
     //Меню запроса категории товара (2 - Показать товары по категориям)
-    public static void entryCategory(List<Good> goodList, String path) {
+    public static void entryCategory() {
         GoodService goodService = new GoodService();
         Scanner scanner = new Scanner(System.in);
         System.out.println();
@@ -143,7 +140,7 @@ public class Main {
     }
 
     //Метод, реализующий меню клиента (авторизованного пользователя)
-    public static void menuClient(List<User> userList, String userPath, List<Good> goodList, String goodPath, String login) {
+    public static void menuClient(String login) {
         UserService userService = new UserService();
         GoodService goodService = new GoodService();
         boolean running = true;
@@ -160,7 +157,7 @@ public class Main {
                     goodService.showGoods();
                     break;
                 case "2":
-                    entryCategory(goodList, goodPath);
+//                    entryCategory(goodList, goodPath);
                     break;
                 case "3":
                     goodService.sortGoodByCategoryAndPrice();

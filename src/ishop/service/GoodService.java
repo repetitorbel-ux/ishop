@@ -97,7 +97,7 @@ public class GoodService {
 
     /************************************** Реализация п.4 - Добавить товар **************************************/
     //Ввод товара и создание коллекции  (4 - Добавить товар)
-    public Good goodEntry(String path, int id) {
+    public Good goodEntry(int id) {
 
         Scanner scanner = new Scanner(System.in);
 
@@ -131,10 +131,10 @@ public class GoodService {
     }
 
     //Метод, добавляющий товар (4 - Добавить товар)
-    public void addGood(List<Good> goodExistList, String path) {
+    public void addGood(List<Good> goodExistList) {
         if (goodExistList.isEmpty()) {
 //            entryGood(goodExistList, path, 1);
-            goodEntry(path, 1);
+            goodEntry(1);
         } else {
             Optional<Good> idGoodMax = findMaxGoodId(goodExistList);
             if (idGoodMax.isPresent()) {
@@ -143,7 +143,7 @@ public class GoodService {
                 int idNext = idGoodMax.get().getId() + 1;
                 System.out.println("Следующий id = " + idNext);
 
-                Good goodNext = goodEntry(path, idNext);
+                Good goodNext = goodEntry(idNext);
 
                 //Создание коллекции товаров
                 List<Good> goodList = new ArrayList<>();

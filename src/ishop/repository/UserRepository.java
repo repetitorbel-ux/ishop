@@ -11,7 +11,7 @@ public class UserRepository {
     /** Создать класс(ы) с исключением для вывода теста ошибки???? */
 
     //Метод, выполняющий сериализацию
-    public static void serialize(List<User> userList){
+    public void saveUser(List<User> userList){
 
         try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(USER_PATH))) {
             objectOutputStream.writeObject(userList);
@@ -22,7 +22,7 @@ public class UserRepository {
 
 
     //Метод, выполняющий десериализацию
-    public static List<User> deserialize(){
+    public List<User> getAllUsers(){
 
         try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(USER_PATH))) {
             List<User> userList = (List<User>) objectInputStream.readObject();
