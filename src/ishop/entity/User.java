@@ -18,8 +18,6 @@ public class User implements Serializable {
     private Role role;
 
     //Конструктор
-
-
     public User() {
     }
 
