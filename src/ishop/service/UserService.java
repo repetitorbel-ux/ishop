@@ -1,9 +1,9 @@
 package ishop.service;
 
+import ishop.Menu;
 import ishop.constants.Role;
 import ishop.entity.User;
 import ishop.repository.UserRepository;
-
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -39,6 +39,7 @@ public class UserService {
         }
     }
     //*****************************************************************************************************************/
+
 
     /**********************************************1 - Регистрация (создание) пользователя********************************************/
     //Метод, создающий пользователя-админа
@@ -118,6 +119,23 @@ public class UserService {
 
 
     /********************** Реализация п.2 baseMenu() - Авторизация ********************/
+    //Метод начала авторизации
+    public void enter(){
+        UserService userService = new UserService();
+        Menu menu = new Menu();
+
+        String login = userService.askLogin();
+        User userCurrent = userService.findUserByLogin(login);//возвратили user
+
+        User userAuth = userService.checkPassword(userCurrent);
+
+        if (userAuth.getLogin().equals("vic_tut")) {
+            menu.menuAdmin();
+        }else {
+            menu.menuClient();
+        }
+    }
+
     //Метод запроса логина при регистрации пользователя
     public String askLogin() {
         Scanner scanner = new Scanner(System.in);
@@ -126,32 +144,64 @@ public class UserService {
         return login;
     }
 
-    //Метод, отвечающий за поиск пользователя по логину
-    public String findByLogin(String login) {
+    //Метод поиска пользователя по введенному логину
+    public User findUserByLogin(String login) {
         List<User> userList = getUserListFromFile();
-        boolean loginFound = false;
+        boolean check = false;
+        User userExist = null;
         String newLogin = login;//переменная для того, чтобы передать значение за пределы цикла
         for (int i = 0; i < userList.size(); i++) {
             String loginExist = userList.get(i).getLogin();
             if (newLogin.equals(loginExist)) {
-                loginFound = true;
+                userExist = userList.get(i);
+                check = true;
             }
         }
-        if (loginFound == true) {
-            return newLogin;
+        if (check) {
+            System.out.println("Пользователь с логином " + newLogin + " найден");
+
         } else {
-            System.out.println("Пользователя с логином " + "'" + newLogin + "'" + " не существует. Пройдите регистрацию");
-            return null;
+            System.out.println("Пользователя с логином " + "'" + newLogin + "'" + " не существует." +
+                    "\nВыберете действие: \n" + "1 - Регистрация пользователя \n" + "2 - Повторный ввод логина \n");
+            Scanner scanner = new Scanner(System.in);
+            String choice = scanner.nextLine();
+            switch (choice) {
+                case "1":
+                    createUser();
+                    break;
+                case "2":
+                    enter();
+            }
         }
+        return userExist;
     }
 
-    //Метод запроса пароля при регистрации пользователя
+    //Метод запроса пароля
     public String askPassword() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите пароль");
-        String pass = scanner.nextLine();
-        return pass;
+        String passCurrent = scanner.nextLine();
+        return passCurrent;
     }
+
+    //Метод проверки введенного пароля
+    public User checkPassword(User user){
+//        User currentUser = user;
+        boolean running = true;
+        while (running) {
+            String currentPass = askPassword();
+            if (user.getPassword().equals(currentPass)) {
+                running = false;
+                break;
+            } else {
+                System.out.println("Введен не верный пароль, повторите ввод пароля");
+//                    String currentPass = askPassword();
+//                    passFound = currentPass;
+            }
+        }
+        return user;
+    }
+    //************************************************************************************************************* */
 
 
     /********************** Реализация п.4 меню Client - Редактировать информацию о пользователе********************/
@@ -174,15 +224,7 @@ public class UserService {
         System.out.println("\nИзменения сохранены.");
     }
 
-    //Метод поиска пользователя по имени
-//    public User findByLogin2(List<User> userList, String login) {
-//        for (User user : userList) {
-//            if (user.getLogin().equals(login)) return user;
-//        }
-//        return null;
-//    }
-
-    //Метод, изменяющий информацию о пользователе (администраторский доступ)
+    //ВЫНЕСТИ в МЕНЮ!!! Метод, изменяющий информацию о пользователе (администраторский доступ)
     public void changeUserItSelf(User user) {
         Scanner scanner = new Scanner(System.in);
 
@@ -226,6 +268,7 @@ public class UserService {
         }
     }
     //************************************************************************************************************* */
+
 
     /**************************** Реализация п.7 меню Admin - Показать всех пользователей *****************************/
     //Метод, выводящий всех пользователей (7 - Показать всех пользователей)
@@ -354,113 +397,6 @@ public class UserService {
         }
     }
     //************************************************************************************************************** */
-
-
-    /**
-     * Проверка пароля Доделать
-     */
-    //Метод, проверяющий введенный пароль
-    public String checkPassword(String login, String pass) {
-        List<User> userList = getUserListFromFile();
-        boolean passFound = false;
-        String passFromUser = pass;
-        for (int i = 0; i < userList.size(); i++) {
-            String passExist = userList.get(i).getPassword();
-            if (passFromUser.equals(passExist)) {
-                passFound = true;
-            }
-        }
-        if (passFound == true) {
-            return "true";
-        } else {
-            System.out.println("Введен не верный пароль, повторите ввод пароля");
-            boolean running = true;
-            while (running) {
-                askPassword();
-                if (passFound == true) {
-                    running = false;
-                    break;
-                }
-            }
-            return "false";
-        }
-    }
-
-    public String checkPassword4(String login, String pass) {
-        List<User> userList = getUserListFromFile();
-        String currentPass = pass;
-        boolean running = true;
-        for (User u : userList) {
-        while (running) {
-            String currentPass2 = askPassword();
-                if (u.getLogin().equals(login) && u.getPassword().equals(currentPass2)) {
-                    currentPass = currentPass2;
-                    running = false;
-                    break;
-                } else {
-                    System.out.println("Введен не верный пароль, повторите ввод пароля");
-//                    String currentPass = askPassword();
-//                    passFound = currentPass;
-                }
-            }
-        }
-        return currentPass;//checkPassword3(user, currentPass);
-    }
-
-    public String findLogin(String login){
-        List<User> userList = getUserListFromFile();
-        String loginExist = null;
-        for (User user : userList) {
-            if (user.getLogin().equals(login)) {
-                loginExist = login;
-            }
-        }
-        return loginExist;
-    }
-
-    public String checkPassword3(String login, String pass) {
-        List<User> userList = getUserListFromFile();
-        String passFound = pass;//!!!!
-        String loginFound = login;
-        for (User u : userList) {
-
-            if (u.getLogin().equals(login) && u.getPassword().equals(passFound)) {
-                passFound = pass;
-                loginFound = login;
-                break;
-            } else {
-                System.out.println("Введен не верный пароль, повторите ввод пароля");
-                passFound = checkPassword4(login, pass);
-                break;
-            }
-        }
-        return passFound;
-    }
-
-    public String checkPassword2(String user, String pass) {
-        List<User> userList = getUserListFromFile();
-        boolean running = true;
-        boolean passFound = false;
-        while (running) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Введите пароль");
-            String pass2 = scanner.nextLine();
-            for (int i = 0; i < userList.size(); i++) {
-                String passExist = userList.get(i).getPassword();
-                if (pass.equals(passExist)) {
-                    passFound = true;
-                }
-            }
-            if (passFound == true) {
-                running = false;
-                return "true";
-            } else {
-                System.out.println("Введен не верный пароль, повторите ввод пароля");
-                return "false";
-            }
-        }
-        return "true";
-    }
 
 
 }

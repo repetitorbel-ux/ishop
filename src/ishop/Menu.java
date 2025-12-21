@@ -1,5 +1,6 @@
 package ishop;
 
+import ishop.entity.User;
 import ishop.service.GoodService;
 import ishop.service.UserService;
 import java.util.Scanner;
@@ -15,13 +16,13 @@ public class Menu {
         Scanner scanner = new Scanner(System.in);
         while (running) {
             System.out.println("\nВыберете действие: \n" + "1 - Регистрация пользователя \n" + "2 - Войти в кабинет \n" + "0 - Выход \n");
-            String x = scanner.nextLine();
-            switch (x) {
+            String choice = scanner.nextLine();
+            switch (choice) {
                 case "1":
                     userService.createUser();
                     break;
                 case "2":
-                    System.out.println("Авторизация в разработке");
+                    userService.enter();
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -34,6 +35,8 @@ public class Menu {
         }
 //        scanner.close();//Нужно закрывать поток????
     }
+
+
 
     //Метод, реализующий меню пользователя с правами администратора
     public void menuAdmin() {
@@ -107,7 +110,7 @@ public class Menu {
     }
 
     //Метод, реализующий меню клиента (авторизованного пользователя)
-    public void menuClient(String login) {
+    public void menuClient() {
         UserService userService = new UserService();
         GoodService goodService = new GoodService();
 
@@ -131,7 +134,7 @@ public class Menu {
                     goodService.sortGoodByCategoryAndPrice();
                     break;
                 case "4":
-                    userService.updateCurrentUser(login);
+//                    userService.updateCurrentUser(login);
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
