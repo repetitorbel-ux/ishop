@@ -1,28 +1,16 @@
 package ishop;
 
-import ishop.entity.Good;
-import ishop.entity.User;
 import ishop.service.GoodService;
 import ishop.service.UserService;
-import ishop.service.Validator;
-
-import java.util.List;
 import java.util.Scanner;
 
-import static ishop.service.GoodService.*;
-import static ishop.service.UserService.*;
+public class Menu {
 
-public class Main {
-    public static void main(String[] args) {
-        baseMenu();
-    }
-
-    /*** Основное (первое) меню. Разделить функционал "прорисовки" и логики??? (пока не получилось) */
     //Метод, реализующий основное меню
-    //public static void baseMenu(List<User> userList, String userPath, List<Good> goodList, String goodPath)
-    public static void baseMenu() {
-        Validator validator = new Validator();
+    public void baseMenu() {
+
         UserService userService = new UserService();
+
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running) {
@@ -37,7 +25,7 @@ public class Main {
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
-                    delay();
+                    userService.delay();
                     running = false;
                     break;
                 default:
@@ -48,9 +36,10 @@ public class Main {
     }
 
     //Метод, реализующий меню пользователя с правами администратора
-    public static void menuAdmin() {
+    public void menuAdmin() {
         UserService userService = new UserService();
         GoodService goodService = new GoodService();
+
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running) {
@@ -96,7 +85,7 @@ public class Main {
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
-                    delay();
+                    userService.delay();
                     running = false;
                     break;
                 default:
@@ -107,8 +96,9 @@ public class Main {
     }
 
     //Меню запроса категории товара (2 - Показать товары по категориям)
-    public static void entryCategory() {
+    public void entryCategory() {
         GoodService goodService = new GoodService();
+
         Scanner scanner = new Scanner(System.in);
         System.out.println();
         System.out.println("Введите категорию товара");
@@ -117,9 +107,10 @@ public class Main {
     }
 
     //Метод, реализующий меню клиента (авторизованного пользователя)
-    public static void menuClient(String login) {
+    public void menuClient(String login) {
         UserService userService = new UserService();
         GoodService goodService = new GoodService();
+
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
         while (running) {
@@ -144,7 +135,7 @@ public class Main {
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
-                    delay();
+                    userService.delay();
                     running = false;
                     break;
                 default:
@@ -154,12 +145,4 @@ public class Main {
 //        scanner.close();
     }
 
-    //Метод, реализующий задержку при выходе из программы
-    public static void delay() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
