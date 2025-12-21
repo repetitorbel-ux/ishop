@@ -4,6 +4,7 @@ import ishop.entity.Good;
 import ishop.entity.User;
 import ishop.service.GoodService;
 import ishop.service.UserService;
+import ishop.service.Validator;
 
 import java.util.List;
 import java.util.Scanner;
@@ -20,6 +21,7 @@ public class Main {
     //Метод, реализующий основное меню
     //public static void baseMenu(List<User> userList, String userPath, List<Good> goodList, String goodPath)
     public static void baseMenu() {
+        Validator validator = new Validator();
         UserService userService = new UserService();
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
@@ -29,34 +31,9 @@ public class Main {
             switch (x) {
                 case "1":
                     userService.createUser();
-//                    userList = getUserListFromFile(userPath);//актуализируем список после создания первого пользователя-админа
                     break;
                 case "2":
-                    String login = userService.askLogin();
-                    String loginExist = userService.findByLogin(login);//возвратили логин
-
-                    String passExist = null;
-                    if(!(loginExist == null)){
-                        String pass = userService.askPassword();
-                        passExist = pass;
-                    }
-                    String passRight = "null";
-                    try {
-                        String passGet = userService.checkPassword(loginExist, passExist);
-                        passRight = passGet;
-                    }catch (RuntimeException e){
-                        baseMenu();
-                    }
-
-//                    String passRight2 = checkPassword2(userList, userPath);
-
-                    if (loginExist.equals("vic_tut") && passRight.equals(passExist)) {
-                        menuAdmin();
-                    }
-                    else {
-//                        askPassword();
-                        menuClient(loginExist);
-                    }
+                    System.out.println("Авторизация в разработке");
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -67,7 +44,7 @@ public class Main {
                     System.out.println("Неверный ввод");
             }
         }
-//        scanner.close();
+//        scanner.close();//Нужно закрывать поток????
     }
 
     //Метод, реализующий меню пользователя с правами администратора
@@ -186,52 +163,3 @@ public class Main {
         }
     }
 }
-/*
-//Temp
-//public static void entryCost(List<Good> goodList, String path){
-//    Scanner scanner = new Scanner(System.in);
-//    System.out.println();
-//    System.out.println("Введите стоимость товара");
-//    String entryCost = scanner.nextLine();
-/// /        showGoodsByCategory(goodList, entryCost);
-//}
-
-
-//Меню запроса полей товара - для удаления
-public static void chooseFieldOfGood(List<Good> goodList, String path){
-    Scanner scanner = new Scanner(System.in);
-    System.out.println();
-    System.out.println("\nВыберете действие: \n" + "1 - id товара \n"
-            + "2 - Наименование товара \n");
-    String entry = scanner.nextLine();
-    switch (entry) {
-        case "1":
-//                entryId(goodList, path);
-            break;
-        case "2":
-//                entryCategory(goodList, path);
-            break;
-        default:
-            System.out.println("Неверный ввод");
-    }
-}
-
-//для удаления
-public static void entryId(List<Good> goodList, String path){
-    Scanner scanner = new Scanner(System.in);
-    System.out.println();
-    System.out.println("Введите id товара");
-    String entryId = scanner.nextLine();
-    showGoodsById(goodList, path, Integer.parseInt(entryId));
-}
-
-        //Отладочный код
-//        File file = new File(path);
-//        System.out.println("Файл существует? " + file.exists());
-//        System.out.println("Абсолютный путь к файлу: " + file.getAbsolutePath());
-
-case "5":
-                    boolean res = checkAccess(userList, userPath);
-                    if (res) updateGoodById(goodList, goodPath);
-                    break;
- */
