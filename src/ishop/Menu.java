@@ -36,8 +36,6 @@ public class Menu {
 //        scanner.close();//Нужно закрывать поток????
     }
 
-
-
     //Метод, реализующий меню пользователя с правами администратора
     public void menuAdmin() {
         UserService userService = new UserService();
@@ -68,8 +66,7 @@ public class Menu {
                     goodService.sortGoodByCategoryAndPrice();
                     break;
                 case "4":
-//                    goodList = getGoodListFromFile();//актуализируем список после добавления первого товара
-//                    goodService.addGood(goodList);
+                    goodService.addGood();
                     break;
                 case "5":
                     goodService.updateGoodById();
