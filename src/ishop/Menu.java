@@ -107,7 +107,7 @@ public class Menu {
     }
 
     //Метод, реализующий меню клиента (авторизованного пользователя)
-    public void menuClient() {
+    public void menuClient(User user) {
         UserService userService = new UserService();
         GoodService goodService = new GoodService();
 
@@ -125,13 +125,13 @@ public class Menu {
                     goodService.showGoods();
                     break;
                 case "2":
-//                    entryCategory(goodList, goodPath);
+                    entryCategory();
                     break;
                 case "3":
                     goodService.sortGoodByCategoryAndPrice();
                     break;
                 case "4":
-//                    userService.updateCurrentUser(login);
+                    userService.changeUserItSelf(user);
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");

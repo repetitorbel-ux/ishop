@@ -132,7 +132,7 @@ public class UserService {
         if (userAuth.getLogin().equals("vic_tut")) {
             menu.menuAdmin();
         }else {
-            menu.menuClient();
+            menu.menuClient(userAuth);
         }
     }
 
@@ -204,27 +204,7 @@ public class UserService {
     //************************************************************************************************************* */
 
 
-    /********************** Реализация п.4 меню Client - Редактировать информацию о пользователе********************/
-    public void updateCurrentUser(String targetLogin) {//List<User> userList, String userPath,
-
-        List<User> userList = getUserListFromFile();
-
-        User currentUser = null;
-        for (User user : userList) {
-            if (user.getLogin().equals(targetLogin)) {
-                currentUser = user;
-                System.out.println(currentUser);
-            }
-        }
-
-        changeUserItSelf(currentUser);  //Вызываем метод, который изменяет объект внутри списка
-
-        writeUser(userList); //Сохраняем изменения в файл
-
-        System.out.println("\nИзменения сохранены.");
-    }
-
-    //ВЫНЕСТИ в МЕНЮ!!! Метод, изменяющий информацию о пользователе (администраторский доступ)
+    /********************** Реализация п.4 меню Client - Редактировать информацию о пользователе ********************/
     public void changeUserItSelf(User user) {
         Scanner scanner = new Scanner(System.in);
 
@@ -234,7 +214,7 @@ public class UserService {
                     + "3 - Изменить имя пользователя \n"
                     + "4 - Изменить фамилию пользователя \n"
                     + "5 - Изменить день рождения пользователя \n"
-                    + "0. Выход \n");
+                    + "0 - Выход \n");
 
             String choice = scanner.nextLine();
 
@@ -260,7 +240,7 @@ public class UserService {
                     user.setBirthday(LocalDate.parse(scanner.nextLine()));
                     break;
                 case "0":
-                    System.out.println("Выход из меню обновления товара.");
+                    System.out.println("Выход из меню");
                     return;
                 default:
                     System.out.println("Неверный ввод. Повторите.");
