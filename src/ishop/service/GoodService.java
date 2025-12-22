@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class GoodService {
 
-    /** ******************************* Вспомогательные методы *******************************/
+    /******************************* Методы слоя Repository *******************************/
     //Метод, получающий список уже существующих товаров
     public List<Good> getGoodListFromFile() {
         GoodRepository goodRepository = new GoodRepository();
@@ -25,17 +25,12 @@ public class GoodService {
         GoodRepository goodRepository = new GoodRepository();
         goodRepository.saveGood(goodList);
     }
-
-    //Метод поиска максимального значения в списке
-    private Optional<Good> findMaxGoodId(List<Good> goodList) {
-        return goodList.stream().max(Comparator.comparing(good -> {
-            return good.getId();
-        }));
-    }
     //***************************************************************************************************************/
 
 
-    /** ******************************* Реализация п.1 - Показать список всех товаров *******************************/
+    /**
+     * ****************************** Реализация п.1 - Показать список всех товаров
+     *******************************/
     //Метод, выводящий все товары (1 - Показать список всех товаров)
     public void showGoods() {
         GoodService goodService = new GoodService();
@@ -79,21 +74,29 @@ public class GoodService {
     //*************************************************************************************************************** */
 
 
-    /** **************** Реализация п.3 - Показать товары по стоимости и категориям (с сортировкой) ******************/
+    /** *************** Реализация п.3 - Показать товары по стоимости и категориям (с сортировкой)**************/
     //Метод, выводящий товары сортированные по категории и затем по цене (3 - Показать товары по стоимости и категориям (с сортировкой))
     public void sortGoodByCategoryAndPrice() {
         GoodService goodService = new GoodService();
         List<Good> goodList;
-        System.out.println("Before sort: " + goodService.getGoodListFromFile());
-        System.out.println();
+//        System.out.println("Before sort: " + goodService.getGoodListFromFile().toString());
+//        System.out.println("Before sort:");
+//        showGoods();
+//        System.out.println();
 
         goodList = goodService.getGoodListFromFile();
         goodList.sort(Comparator.comparing((Good good1) -> good1.getCategory())
                 .thenComparing(good -> good.getPrice()));
-        System.out.println("After sort: " + goodList);
-    }
+        showGoods(goodList);
+        }
     //** ************************************************************************************************************* */
 
+    public void showGoods(List<Good> goodList) {
+        System.out.println("Товары, сортированные по категории и затем по цене:");
+        for (Good good : goodList) {
+            System.out.println(good);
+        }
+    }
 
     /************************************** Реализация п.4 - Добавить товар **************************************/
     //Ввод товара и создание коллекции  (4 - Добавить товар)
@@ -131,7 +134,9 @@ public class GoodService {
     }
 
     //Метод, добавляющий товар (4 - Добавить товар)
-    public void addGood(List<Good> goodExistList) {
+    public void addGood() {
+        GoodService goodService = new GoodService();
+        List<Good> goodExistList = goodService.getGoodListFromFile();
         if (goodExistList.isEmpty()) {
 //            entryGood(goodExistList, path, 1);
             goodEntry(1);
@@ -162,13 +167,20 @@ public class GoodService {
             }
         }
     }
+
+    //Метод поиска максимального значения в списке
+    private Optional<Good> findMaxGoodId(List<Good> goodList) {
+        return goodList.stream().max(Comparator.comparing(good -> {
+            return good.getId();
+        }));
+    }
     //*************************************************************************************************************** */
 
 
     /*** ******************************* Реализация п.5 - Обновить товар *******************************************/
     //Метод для выбора товара по id, изменения товара и записи изменений в файл
     public void updateGoodById() {
-//        GoodService goodService = new GoodService();
+
         List<Good> goodList = getGoodListFromFile();
 
         Scanner scanner = new Scanner(System.in);
@@ -184,9 +196,12 @@ public class GoodService {
         System.out.println("Выбранный товар: " + good);
 
         changeGood(good);  //Вызываем метод, который изменяет объект внутри списка
+//        message();
 
         writeGood(goodList); //Сохраняем изменения в файл
+    }
 
+    public void message() {
         System.out.println("\nИзменения сохранены.");
     }
 
