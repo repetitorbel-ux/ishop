@@ -3,6 +3,8 @@ package ishop;
 import ishop.entity.User;
 import ishop.service.GoodService;
 import ishop.service.UserService;
+
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class Menu {
@@ -78,7 +80,8 @@ public class Menu {
                     userService.showUsers();
                     break;
                 case "8":
-                    userService.entryLoginUser();
+//                    entryLoginUser();
+                    userService.showUsersByLogin();
                     break;
                 case "9":
                     userService.updateUserById();
@@ -95,6 +98,22 @@ public class Menu {
 //        scanner.close();
     }
 
+    //Метод запроса логина при регистрации пользователя
+    public int askId() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\nВведите id пользователя: ");
+        int id = Integer.parseInt(scanner.nextLine());
+        return id;
+    }
+
+    //Метод запроса логина при регистрации пользователя
+    public String askLogin() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите login");
+        String login = scanner.nextLine();
+        return login;
+    }
+
     //Меню запроса категории товара (2 - Показать товары по категориям)
     public void entryCategory() {
         GoodService goodService = new GoodService();
@@ -106,8 +125,17 @@ public class Menu {
         goodService.checkCategory(entryCategory);
     }
 
+    public String entryLoginUser() {
+        UserService userService = new UserService();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.println("Введите логин пользователя");
+        String entryLogin = scanner.nextLine();
+        return entryLogin;
+    }
+
     //Метод, реализующий меню клиента (авторизованного пользователя)
-    public void menuClient(User user) {
+    public void menuClient(String login) {//public void menuClient(User user)
         UserService userService = new UserService();
         GoodService goodService = new GoodService();
 
@@ -131,7 +159,8 @@ public class Menu {
                     goodService.sortGoodByCategoryAndPrice();
                     break;
                 case "4":
-                    userService.changeUserItSelf(user);
+                    menuCurrentUser(login);
+//                    userService.showCurrentUser(login);
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -143,6 +172,50 @@ public class Menu {
             }
         }
 //        scanner.close();
+    }
+
+    public void menuCurrentUser(String login) {//public void changeUserItSelf(User userForChange)
+        UserService userService = new UserService();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nВыберете действие: \n" + "1 - Изменить логин пользователя \n"
+                    + "2 - Изменить пароль пользователя \n"
+                    + "3 - Изменить имя пользователя \n"
+                    + "4 - Изменить фамилию пользователя \n"
+                    + "5 - Изменить день рождения пользователя \n"
+                    + "0 - Выход \n");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.println("Введите новый логин:");
+                    userService.changeCurrentUser(login, scanner.nextLine(),  "1");
+                    break;
+                case "2":
+                    System.out.println("Введите новый пароль:");
+                    userService.changeCurrentUser(login, scanner.nextLine(),  "2");
+                    break;
+                case "3":
+                    System.out.println("Введите новое имя:");
+                    userService.changeCurrentUser(login, scanner.nextLine(),  "3");
+                    break;
+                case "4":
+                    System.out.println("Введите новую фамилию:");
+                    userService.changeCurrentUser(login, scanner.nextLine(),  "4");
+                    break;
+                case "5":
+                    System.out.println("Введите день рождения:");
+                    userService.changeCurrentUserLC(login, LocalDate.parse(scanner.nextLine()), "5");
+                    break;
+                case "0":
+                    System.out.println("Выход из меню");
+                    return;
+                default:
+                    System.out.println("Неверный ввод. Повторите.");
+            }
+        }
     }
 
 }

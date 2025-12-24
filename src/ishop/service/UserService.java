@@ -84,8 +84,6 @@ public class UserService {
             int id = idUserMax.get().getId() + 1;
             System.out.println("Следующий id = " + id);
 
-            //Проверка логина на уникальность и null - Не нужна проверка, так как Optional???
-//            checkLoginNull(newLogin);//Old метод проверки на null
             String newLogin = validator.checkLogin();
 
             String newPass = validator.checkValue("пароль");
@@ -124,7 +122,7 @@ public class UserService {
         UserService userService = new UserService();
         Menu menu = new Menu();
 
-        String login = userService.askLogin();
+        String login = menu.askLogin();
         User userCurrent = userService.findUserByLogin(login);//возвратили user
 
         User userAuth = userService.checkPassword(userCurrent);
@@ -132,16 +130,9 @@ public class UserService {
         if (userAuth.getLogin().equals("vic_tut")) {
             menu.menuAdmin();
         }else {
-            menu.menuClient(userAuth);
+//            menu.menuClient(userAuth);
+            menu.menuClient(login);
         }
-    }
-
-    //Метод запроса логина при регистрации пользователя
-    public String askLogin() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите login");
-        String login = scanner.nextLine();
-        return login;
     }
 
     //Метод поиска пользователя по введенному логину
@@ -186,7 +177,6 @@ public class UserService {
 
     //Метод проверки введенного пароля
     public User checkPassword(User user){
-//        User currentUser = user;
         boolean running = true;
         while (running) {
             String currentPass = askPassword();
@@ -195,8 +185,6 @@ public class UserService {
                 break;
             } else {
                 System.out.println("Введен не верный пароль, повторите ввод пароля");
-//                    String currentPass = askPassword();
-//                    passFound = currentPass;
             }
         }
         return user;
@@ -205,45 +193,71 @@ public class UserService {
 
 
     /********************** Реализация п.4 меню Client - Редактировать информацию о пользователе ********************/
-    public void changeUserItSelf(User user) {
-        Scanner scanner = new Scanner(System.in);
+    public void changeCurrentUser(String loginCurrent, String value, String valueChoice) {//public void writeChange(User userForChange, String value, String valueChoice)
+        List<User> userList = getUserListFromFile();
+        String choice = valueChoice;
+        switch (choice) {
+            case "1":
+                for(User u : userList){
+                    if(loginCurrent.equals(u.getLogin())){
+                        u.setLogin(value);
+                        break;
+                    }
+                }
+                writeUser(userList);
+            case "2":
+                for(User u : userList){
+                    if(loginCurrent.equals(u.getLogin())){
+                        u.setPassword(value);
+                        break;
+                    }
+                }writeUser(userList);
+            case "3":
+                for(User u : userList){
+                    if(loginCurrent.equals(u.getLogin())){
+                        u.setFirstname(value);
+                        break;
+                    }
+                }writeUser(userList);
+            case "4":
+                for(User u : userList){
+                    if(loginCurrent.equals(u.getLogin())){
+                        u.setLastname(value);
+                        break;
+                    }
+                }writeUser(userList);
+            case "0":
+                System.out.println("Выход из меню");
+                return;
+            default:
+                System.out.println("Неверный ввод");
+        }
+    }
 
-        while (true) {
-            System.out.println("\nВыберете действие: \n" + "1 - Изменить логин пользователя \n"
-                    + "2 - Изменить пароль пользователя \n"
-                    + "3 - Изменить имя пользователя \n"
-                    + "4 - Изменить фамилию пользователя \n"
-                    + "5 - Изменить день рождения пользователя \n"
-                    + "0 - Выход \n");
+    public void changeCurrentUserLC(String loginCurrent, LocalDate value, String valueChoice) {//public void writeChange(User userForChange, String value, String valueChoice)
+        List<User> userList = getUserListFromFile();
+        switch (valueChoice) {
+            case "5":
+                for(User u : userList){
+                    if(loginCurrent.equals(u.getLogin())){
+                        u.setBirthday(value);
+                        break;
+                    }
+                }writeUser(userList);
+            case "0":
+                System.out.println("Выход из меню");
+                return;
+            default:
+                System.out.println("Неверный ввод");
+        }
+    }
 
-            String choice = scanner.nextLine();
-
-            switch (choice) {
-                case "1":
-                    System.out.println("Введите новый логин:");
-                    user.setLogin(scanner.nextLine());
-                    break;
-                case "2":
-                    System.out.println("Введите новый пароль:");
-                    user.setPassword(scanner.nextLine());
-                    break;
-                case "3":
-                    System.out.println("Введите новое имя:");
-                    user.setFirstname(scanner.nextLine());
-                    break;
-                case "4":
-                    System.out.println("Введите новую фамилию:");
-                    user.setLastname(scanner.nextLine());
-                    break;
-                case "5":
-                    System.out.println("Введите день рождения:");
-                    user.setBirthday(LocalDate.parse(scanner.nextLine()));
-                    break;
-                case "0":
-                    System.out.println("Выход из меню");
-                    return;
-                default:
-                    System.out.println("Неверный ввод. Повторите.");
+    public void showCurrentUser(String loginCurrent) {
+        List<User> userList = getUserListFromFile();
+        for (User u : userList) {
+            if (loginCurrent.equals(u.getLogin())) {
+                System.out.println(u);
+                break;
             }
         }
     }
@@ -264,36 +278,24 @@ public class UserService {
 
 
     /*************************** Реализация п.8 меню Admin - Найти пользователя по логину ******************************/
-    //Меню запроса логина
-    public void entryLoginUser() {//List<User> userList, String userPath
-//        List<User> userList = getUserListFromFile();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println();
-        System.out.println("Введите логин пользователя");
-        String entryLogin = scanner.nextLine();
-        checkLogin(entryLogin);
-    }
-
-    public void checkLogin(String targetLogin) {
+    //Метод проверки введенного логина
+    public void showUsersByLogin() {//String targetLogin
         List<User> userList = getUserListFromFile();
-        System.out.println();
-        String loginNotExist = null;
-        for (User user : userList) {
-            if (user.getLogin().equals(targetLogin)) {
-                loginNotExist = targetLogin;
-            }
-        }
-        if (loginNotExist == null) {
-            System.out.println("Пользователя с логином " + '\'' + targetLogin + '\'' + " не существует. Введите корректный логин");
-        } else showUsersByLogin(userList, targetLogin);
-    }
+        Menu menu = new Menu();
+        String loginExist = null;
 
-    //Метод, выводящий пользователя с заданным логином (8 - Найти пользователя по логину)
-    public void showUsersByLogin(List<User> userList, String targetLogin) {
-        System.out.println("Пользователь для редактирования " + targetLogin + ": ");
-        for (User user : userList) {
-            if (user.getLogin().equals(targetLogin)) {
-                System.out.println(user);
+        boolean running = true;
+        while (running) {
+            String targetLogin = menu.entryLoginUser();
+            for (User user : userList) {
+                if (user.getLogin().equals(targetLogin)) {
+                    loginExist = targetLogin;
+                    System.out.println(user);
+                    running = false;
+                }
+            }
+            if (loginExist == null) {
+                System.out.println("Пользователя с логином " + '\'' + targetLogin + '\'' + " не существует. Введите корректный логин");
             }
         }
     }
@@ -304,11 +306,13 @@ public class UserService {
     //Метод для выбора товара по id, изменения информации о пользователе и записи изменений в файл
     public void updateUserById() {//List<User> userList, String userPath
 
+        Menu menu = new Menu();
         List<User> userList = getUserListFromFile();
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nВведите id пользователя: ");
-        int id = Integer.parseInt(scanner.nextLine());
+//        System.out.println("\nВведите id пользователя: ");
+//        int id = Integer.parseInt(scanner.nextLine());
+        int id = menu.askId();
 
         User user = findById(userList, id);
         if (user == null) {
@@ -342,14 +346,13 @@ public class UserService {
                     + "3 - Изменить имя пользователя \n"
                     + "4 - Изменить фамилию пользователя \n"
                     + "5 - Изменить день рождения пользователя \n"
-                    + "0. Выход \n");
+                    + "0 - Выход \n");
 
             String choice = scanner.nextLine();
 
             switch (choice) {
                 case "1":
                     System.out.println("Введите логин:");
-
                     user.setLogin(scanner.nextLine());
                     break;
                 case "2":

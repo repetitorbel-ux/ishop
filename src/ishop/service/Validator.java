@@ -69,7 +69,7 @@ public class Validator {
             boolean loginFound = false;
             System.out.println("Введите login");
             String login = scanner.nextLine();
-//            validator.validateInput(login);//Проверка логина на уникальность и null - Не нужна проверка, так как Optional???
+
             newLogin = login;
             if (!login.isBlank()) {//if (!login.isBlank())
                 for (int i = 0; i < userExistList.size(); i++) {
@@ -90,43 +90,5 @@ public class Validator {
         return newLogin;
     }
 
-
-    /******************************* Old методы*******************************/
-    //Метод проверки на null и выброса исключения
-    public void checkNull(String value, String fieldName) {
-        if (value == null) {
-            throw new NullPointerException("!!" + fieldName + " не может быть null!!. Повторите операцию.");
-        }
-    }
-
-    public String checkEmpty(String value, String fieldName) {
-        if (value.isBlank()) {
-            System.out.println("Поле" + fieldName + " не может быть пустым или содержать пробельные символы. Повторите ввод.");
-            ;
-        }
-        return value;
-    }
-
-    public String checkPass(){
-        UserService userService = new UserService();
-        List<User> userExistList = userService.getUserListFromFile();
-        Scanner scanner = new Scanner(System.in);
-        String newPass = "tempPass";
-        boolean running = true;
-        while (running) {
-//            boolean passFound = false;
-            System.out.println("Введите пароль");
-            String pass = scanner.nextLine();
-            validateInput(pass);//Проверка логина на null
-            newPass = pass;
-            if (!pass.isBlank()) {
-                running = false;
-            } else {
-                System.out.println("Логин " + "'" + newPass + "'" + " не может быть пустым. Введите корректный пароль");
-            }
-
-        }
-        return newPass;
-    }
 
 }
