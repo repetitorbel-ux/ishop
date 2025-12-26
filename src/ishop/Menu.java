@@ -1,6 +1,5 @@
 package ishop;
 
-import ishop.entity.User;
 import ishop.service.GoodService;
 import ishop.service.UserService;
 
@@ -80,11 +79,11 @@ public class Menu {
                     userService.showUsers();
                     break;
                 case "8":
-//                    entryLoginUser();
                     userService.showUsersByLogin();
                     break;
                 case "9":
-                    userService.updateUserById();
+                    Integer idFound = userService.findById();
+                    if(idFound != null) menuChangeUser(idFound);
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -96,6 +95,53 @@ public class Menu {
             }
         }
 //        scanner.close();
+    }
+
+    //Метод, изменяющий данные пользователя (администраторский доступ)
+    public void menuChangeUser(Integer currentId) {
+        UserService userService = new UserService();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nВыберете действие: \n" + "1 - Изменить логин пользователя \n"
+                    + "2 - Изменить пароль пользователя \n"
+                    + "3 - Изменить имя пользователя \n"
+                    + "4 - Изменить фамилию пользователя \n"
+                    + "5 - Изменить день рождения пользователя \n"
+                    + "0 - Выход \n");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.println("Введите новый логин:");
+                    userService.changeUserById(currentId, scanner.nextLine(), "1");
+//                    userService.changeUserById(scanner.nextLine(),  "1");
+//                    user.setLogin(scanner.nextLine());
+                    break;
+                case "2":
+                    System.out.println("Введите новый пароль:");
+                    userService.changeUserById(currentId, scanner.nextLine(), "2");
+                    break;
+                case "3":
+                    System.out.println("Введите новое имя:");
+                    userService.changeUserById(currentId, scanner.nextLine(), "3");
+                    break;
+                case "4":
+                    System.out.println("Введите новую фамилию:");
+                    userService.changeUserById(currentId, scanner.nextLine(), "4");
+                    break;
+                case "5":
+                    System.out.println("Введите день рождения:");
+                    userService.changeUserByIdLC(currentId, LocalDate.parse(scanner.nextLine()), "5");
+                    break;
+                case "0":
+                    System.out.println("Выход из меню обновления товара.");
+                    return;
+                default:
+                    System.out.println("Неверный ввод. Повторите.");
+            }
+        }
     }
 
     //Метод запроса логина при регистрации пользователя
@@ -112,6 +158,14 @@ public class Menu {
         System.out.println("Введите login");
         String login = scanner.nextLine();
         return login;
+    }
+
+    //Метод запроса пароля
+    public String askPassword() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите пароль");
+        String passCurrent = scanner.nextLine();
+        return passCurrent;
     }
 
     //Меню запроса категории товара (2 - Показать товары по категориям)

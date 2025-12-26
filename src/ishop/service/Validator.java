@@ -18,8 +18,15 @@ public class Validator {
         return input;
     }
 
+    public Integer validateInputInt(Integer input) throws InvalidInputException {
+        if (input == null) {
+            throw new InvalidInputException("Ввод не может быть null. Повторите операцию.");
+        }
+        return input;
+    }
+
     public String checkValue(String fieldName){
-        UserService userService = new UserService();
+//        UserService userService = new UserService();
         Scanner scanner = new Scanner(System.in);
         String newValue = "tempValue";
         boolean running = true;
@@ -34,6 +41,24 @@ public class Validator {
                 System.out.println("Поле" + "'" + fieldName + "'" + " не может быть пустым. Введите корректное значение");
             }
 
+        }
+        return newValue;
+    }
+
+    public Integer checkValueInt(String fieldName){
+        Scanner scanner = new Scanner(System.in);
+        Integer newValue = null;
+        boolean running = true;
+        while (running) {
+            System.out.println("Введите " + fieldName);
+            Integer value = Integer.parseInt(scanner.nextLine());
+            validateInputInt(value);//Проверка на null
+            newValue = value;
+            if (value instanceof Integer) {
+                running = false;
+            } else {
+                System.out.println("Поле" + " '" + fieldName + "'" + " не может быть пустым. Введите корректное значение");
+            }
         }
         return newValue;
     }

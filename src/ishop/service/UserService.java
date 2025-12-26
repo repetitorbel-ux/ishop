@@ -4,6 +4,7 @@ import ishop.Menu;
 import ishop.constants.Role;
 import ishop.entity.User;
 import ishop.repository.UserRepository;
+
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -12,7 +13,7 @@ import java.util.*;
 public class UserService {
     private static final String ADMIN = "vic_tut";
 
-    /******************************* Методы слоя Repository *******************************/
+    /******************************* Методы для работы со слоем Repository *******************************/
     //Метод, получающий список существующих пользователей
     public List<User> getUserListFromFile() {
         UserRepository userRepository = new UserRepository();
@@ -117,8 +118,8 @@ public class UserService {
 
 
     /********************** Реализация п.2 baseMenu() - Авторизация ********************/
-    //Метод начала авторизации
-    public void enter(){
+    //Метод начала авторизации - точка входа
+    public void enter() {
         UserService userService = new UserService();
         Menu menu = new Menu();
 
@@ -129,7 +130,7 @@ public class UserService {
 
         if (userAuth.getLogin().equals("vic_tut")) {
             menu.menuAdmin();
-        }else {
+        } else {
 //            menu.menuClient(userAuth);
             menu.menuClient(login);
         }
@@ -167,19 +168,12 @@ public class UserService {
         return userExist;
     }
 
-    //Метод запроса пароля
-    public String askPassword() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите пароль");
-        String passCurrent = scanner.nextLine();
-        return passCurrent;
-    }
-
     //Метод проверки введенного пароля
-    public User checkPassword(User user){
+    public User checkPassword(User user) {
+        Menu menu = new Menu();
         boolean running = true;
         while (running) {
-            String currentPass = askPassword();
+            String currentPass = menu.askPassword();
             if (user.getPassword().equals(currentPass)) {
                 running = false;
                 break;
@@ -198,34 +192,37 @@ public class UserService {
         String choice = valueChoice;
         switch (choice) {
             case "1":
-                for(User u : userList){
-                    if(loginCurrent.equals(u.getLogin())){
+                for (User u : userList) {
+                    if (loginCurrent.equals(u.getLogin())) {
                         u.setLogin(value);
                         break;
                     }
                 }
                 writeUser(userList);
             case "2":
-                for(User u : userList){
-                    if(loginCurrent.equals(u.getLogin())){
+                for (User u : userList) {
+                    if (loginCurrent.equals(u.getLogin())) {
                         u.setPassword(value);
                         break;
                     }
-                }writeUser(userList);
+                }
+                writeUser(userList);
             case "3":
-                for(User u : userList){
-                    if(loginCurrent.equals(u.getLogin())){
+                for (User u : userList) {
+                    if (loginCurrent.equals(u.getLogin())) {
                         u.setFirstname(value);
                         break;
                     }
-                }writeUser(userList);
+                }
+                writeUser(userList);
             case "4":
-                for(User u : userList){
-                    if(loginCurrent.equals(u.getLogin())){
+                for (User u : userList) {
+                    if (loginCurrent.equals(u.getLogin())) {
                         u.setLastname(value);
                         break;
                     }
-                }writeUser(userList);
+                }
+                writeUser(userList);
             case "0":
                 System.out.println("Выход из меню");
                 return;
@@ -238,12 +235,13 @@ public class UserService {
         List<User> userList = getUserListFromFile();
         switch (valueChoice) {
             case "5":
-                for(User u : userList){
-                    if(loginCurrent.equals(u.getLogin())){
+                for (User u : userList) {
+                    if (loginCurrent.equals(u.getLogin())) {
                         u.setBirthday(value);
                         break;
                     }
-                }writeUser(userList);
+                }
+                writeUser(userList);
             case "0":
                 System.out.println("Выход из меню");
                 return;
@@ -252,6 +250,7 @@ public class UserService {
         }
     }
 
+    //Метод, показывающий текущего пользоватля - не используется, для удаления???
     public void showCurrentUser(String loginCurrent) {
         List<User> userList = getUserListFromFile();
         for (User u : userList) {
@@ -267,7 +266,6 @@ public class UserService {
     /**************************** Реализация п.7 меню Admin - Показать всех пользователей *****************************/
     //Метод, выводящий всех пользователей (7 - Показать всех пользователей)
     public void showUsers() {
-//        UserService userService = new UserService();
         List<User> userList = getUserListFromFile();
         System.out.println("Список пользователей:");
         for (User user : userList) {
@@ -303,80 +301,94 @@ public class UserService {
 
 
     /********************** Реализация п.9 меню Admin - Редактировать информацию о пользователе*********************/
-    //Метод для выбора товара по id, изменения информации о пользователе и записи изменений в файл
-    public void updateUserById() {//List<User> userList, String userPath
-
-        Menu menu = new Menu();
-        List<User> userList = getUserListFromFile();
-
-        Scanner scanner = new Scanner(System.in);
-//        System.out.println("\nВведите id пользователя: ");
-//        int id = Integer.parseInt(scanner.nextLine());
-        int id = menu.askId();
-
-        User user = findById(userList, id);
-        if (user == null) {
-            System.out.println("Пользователь не найден.");
-            return;
-        }
-
-        System.out.println("Выбранный пользователь: " + user);
-        changeUser(user);  //Вызываем метод, который изменяет объект внутри списка
-
-        writeUser(userList); //Сохраняем изменения в файл
-
-        System.out.println("\nИзменения сохранены.");
-    }
-
     //Метод поиска пользователя по id
-    public User findById(List<User> userList, int id) {
-        for (User user : userList) {
-            if (user.getId() == id) return user;
+    public Integer findById() {
+        Validator validator = new Validator();
+        List<User> userList = getUserListFromFile();
+        int n = 3;
+        while (n > 0) {
+            Integer id = validator.checkValueInt("id");
+            for (User user : userList) {
+                if (user.getId() == id) {
+                    return id;
+                }
+            }
+            n--;
+            if(n == 0) {
+                System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+            }else System.out.println("Пользователь с id = " + id + " не найден. Повторите ввод. Количество оставшихся попыток: " + n);
         }
         return null;
     }
 
-    //Метод, изменяющий информацию о пользователе (администраторский доступ)
-    public void changeUser(User user) {
-        Scanner scanner = new Scanner(System.in);
+    //Метод, непосредственно изменяющий пользователя (поля, кроме дня рождения)
+    public void changeUserById(Integer id, String valueNew, String valueChoice) {
 
-        while (true) {
-            System.out.println("\nВыберете действие: \n" + "1 - Изменить логин пользователя \n"
-                    + "2 - Изменить пароль пользователя \n"
-                    + "3 - Изменить имя пользователя \n"
-                    + "4 - Изменить фамилию пользователя \n"
-                    + "5 - Изменить день рождения пользователя \n"
-                    + "0 - Выход \n");
+        List<User> userList = getUserListFromFile();
 
-            String choice = scanner.nextLine();
+        String choice = valueChoice;
+        switch (choice) {
+            case "1":
+                for (User u : userList) {
+                    if (id == u.getId()) {
+                        u.setLogin(valueNew);
+                        break;
+                    }
+                }
+                writeUser(userList);
+                break;
+            case "2":
+                for (User u : userList) {
+                    if (id == u.getId()) {
+                        u.setPassword(valueNew);
+                        break;
+                    }
+                }
+                writeUser(userList);
+                break;
+            case "3":
+                for (User u : userList) {
+                    if (id == u.getId()) {
+                        u.setFirstname(valueNew);
+                        break;
+                    }
+                }
+                writeUser(userList);
+                break;
+            case "4":
+                for (User u : userList) {
+                    if (id == u.getId()) {
+                        u.setLastname(valueNew);
+                        break;
+                    }
+                }
+                writeUser(userList);
+                break;
+            case "0":
+                System.out.println("Выход из меню");
+                return;
+            default:
+                System.out.println("Неверный ввод");
+        }
+    }
 
-            switch (choice) {
-                case "1":
-                    System.out.println("Введите логин:");
-                    user.setLogin(scanner.nextLine());
-                    break;
-                case "2":
-                    System.out.println("Введите новый пароль:");
-                    user.setPassword(scanner.nextLine());
-                    break;
-                case "3":
-                    System.out.println("Введите новое имя:");
-                    user.setFirstname(scanner.nextLine());
-                    break;
-                case "4":
-                    System.out.println("Введите новую фамилию:");
-                    user.setLastname(scanner.nextLine());
-                    break;
-                case "5":
-                    System.out.println("Введите день рождения:");
-                    user.setBirthday(LocalDate.parse(scanner.nextLine()));
-                    break;
-                case "0":
-                    System.out.println("Выход из меню обновления товара.");
-                    return;
-                default:
-                    System.out.println("Неверный ввод. Повторите.");
-            }
+    //Метод изменяющий день рождения
+    public void changeUserByIdLC(Integer id, LocalDate newDate, String valueChoice) {
+        List<User> userList = getUserListFromFile();
+        switch (valueChoice) {
+            case "5":
+                for (User u : userList) {
+                    if (id == u.getId()) {
+                        u.setBirthday(newDate);
+                        break;
+                    }
+                }
+                writeUser(userList);
+            case "0":
+                System.out.println("Выход из меню");
+                return;
+            default:
+                System.out.println("Неверный ввод");
         }
     }
     //************************************************************************************************************** */

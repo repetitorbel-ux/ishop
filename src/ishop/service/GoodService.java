@@ -35,7 +35,7 @@ public class GoodService {
     public void showGoods() {
         GoodService goodService = new GoodService();
         List<Good> goodList = goodService.getGoodListFromFile();
-        System.out.println("Список товаров:");
+        System.out.println("Актуальный писок товаров:");
         for (Good good : goodList) {
             System.out.println(good);
         }
@@ -128,7 +128,7 @@ public class GoodService {
         List<Good> goodList = new ArrayList<>();//пустая коллекция
 //        System.out.println("Пустой список?: " + goodList);
         goodList.add(goodNew);//добавление нового (введенного) товара в коллекцию
-        System.out.println("Новый (добавляемый) товар: " + goodList);
+        System.out.println("Новый товар: " + goodList);
         writeGood(goodList);//вызов метода, сериализующего товар
         return goodNew; //нигде не используется
     }
@@ -271,7 +271,7 @@ public class GoodService {
         goodList = getGoodListFromFile();
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nВведите id товара: ");
+        System.out.print("\nВведите id товара для удаления: ");
         int id = Integer.parseInt(scanner.nextLine());
 
         Good goodTemp = null;
@@ -286,17 +286,20 @@ public class GoodService {
                 }
                 goodTemp = good;
             }
+            System.out.print("\nУдаляемый товар: " + goodTemp + "\n");
             goodList.removeAll(temp);
-            System.out.println("Список после удаления: " + goodList);
+
         }
 
         writeGood(goodList); //Сохраняем изменения в файл
 
         if (!(goodTemp == null)) {
-            System.out.println("\nУдаление выполнено.");
+            System.out.print("\nУдаление выполнено. " );
+            showGoods();
         }
     }
     //*************************************************************************************************************/
+
 
 }
 
