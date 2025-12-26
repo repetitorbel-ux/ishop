@@ -1,5 +1,6 @@
 package ishop;
 
+import ishop.entity.User;
 import ishop.service.GoodService;
 import ishop.service.UserService;
 
@@ -102,6 +103,9 @@ public class Menu {
         UserService userService = new UserService();
         Scanner scanner = new Scanner(System.in);
 
+        System.out.println("Выбранный пользователь:");
+        userService.showCurrentUser(currentId);
+
         while (true) {
             System.out.println("\nВыберете действие: \n" + "1 - Изменить логин пользователя \n"
                     + "2 - Изменить пароль пользователя \n"
@@ -116,24 +120,32 @@ public class Menu {
                 case "1":
                     System.out.println("Введите новый логин:");
                     userService.changeUserById(currentId, scanner.nextLine(), "1");
-//                    userService.changeUserById(scanner.nextLine(),  "1");
-//                    user.setLogin(scanner.nextLine());
+                    System.out.println("Текущие данные пользователя:");
+                    userService.showCurrentUser(currentId);
                     break;
                 case "2":
                     System.out.println("Введите новый пароль:");
                     userService.changeUserById(currentId, scanner.nextLine(), "2");
+                    System.out.println("Текущие данные пользователя:");
+                    userService.showCurrentUser(currentId);
                     break;
                 case "3":
                     System.out.println("Введите новое имя:");
                     userService.changeUserById(currentId, scanner.nextLine(), "3");
+                    System.out.println("Текущие данные пользователя:");
+                    userService.showCurrentUser(currentId);
                     break;
                 case "4":
                     System.out.println("Введите новую фамилию:");
                     userService.changeUserById(currentId, scanner.nextLine(), "4");
+                    System.out.println("Текущие данные пользователя:");
+                    userService.showCurrentUser(currentId);
                     break;
                 case "5":
                     System.out.println("Введите день рождения:");
                     userService.changeUserByIdLC(currentId, LocalDate.parse(scanner.nextLine()), "5");
+                    System.out.println("Текущие данные пользователя:");
+                    userService.showCurrentUser(currentId);
                     break;
                 case "0":
                     System.out.println("Выход из меню обновления товара.");
@@ -189,7 +201,7 @@ public class Menu {
     }
 
     //Метод, реализующий меню клиента (авторизованного пользователя)
-    public void menuClient(String login) {//public void menuClient(User user)
+    public void menuClient(User user) {//(User user)String login
         UserService userService = new UserService();
         GoodService goodService = new GoodService();
 
@@ -213,7 +225,8 @@ public class Menu {
                     goodService.sortGoodByCategoryAndPrice();
                     break;
                 case "4":
-                    menuCurrentUser(login);
+                    menuCurrentUser(user);
+//                    menuCurrentUser(login);
 //                    userService.showCurrentUser(login);
                     break;
                 case "0":
@@ -228,12 +241,15 @@ public class Menu {
 //        scanner.close();
     }
 
-    public void menuCurrentUser(String login) {//public void changeUserItSelf(User userForChange)
+    public void menuCurrentUser(User userForChange) {//public void changeUserItSelf(User userForChange)(String login)
         UserService userService = new UserService();
         Scanner scanner = new Scanner(System.in);
 
+        System.out.println("Текущий пользователь:" + userForChange);
+
         while (true) {
-            System.out.println("\nВыберете действие: \n" + "1 - Изменить логин пользователя \n"
+            System.out.println("\nВыберете действие: \n"
+                    + "1 - Изменить логин пользователя \n"
                     + "2 - Изменить пароль пользователя \n"
                     + "3 - Изменить имя пользователя \n"
                     + "4 - Изменить фамилию пользователя \n"
@@ -244,24 +260,29 @@ public class Menu {
 
             switch (choice) {
                 case "1":
-                    System.out.println("Введите новый логин:");
-                    userService.changeCurrentUser(login, scanner.nextLine(),  "1");
+                    System.out.print("Введите новый логин: ");
+                    userService.changeCurrentUser(userForChange, scanner.nextLine(),  "1");
+                    System.out.println("Данные пользователя после изменения:" + userForChange);
                     break;
                 case "2":
-                    System.out.println("Введите новый пароль:");
-                    userService.changeCurrentUser(login, scanner.nextLine(),  "2");
+                    System.out.print("Введите новый пароль: ");
+                    userService.changeCurrentUser(userForChange, scanner.nextLine(),  "2");
+                    System.out.println("Данные пользователя после изменения:" + userForChange);
                     break;
                 case "3":
-                    System.out.println("Введите новое имя:");
-                    userService.changeCurrentUser(login, scanner.nextLine(),  "3");
+                    System.out.print("Введите новое имя: ");
+                    userService.changeCurrentUser(userForChange, scanner.nextLine(),  "3");
+                    System.out.println("Данные пользователя после изменения:" + userForChange);
                     break;
                 case "4":
-                    System.out.println("Введите новую фамилию:");
-                    userService.changeCurrentUser(login, scanner.nextLine(),  "4");
+                    System.out.print("Введите новую фамилию: ");
+                    userService.changeCurrentUser(userForChange, scanner.nextLine(),  "4");
+                    System.out.println("Данные пользователя после изменения:" + userForChange);
                     break;
                 case "5":
-                    System.out.println("Введите день рождения:");
-                    userService.changeCurrentUserLC(login, LocalDate.parse(scanner.nextLine()), "5");
+                    System.out.print("Введите день рождения: ");
+                    userService.changeCurrentUserLC(userForChange, LocalDate.parse(scanner.nextLine()), "5");
+                    System.out.println("Данные пользователя после изменения:" + userForChange);
                     break;
                 case "0":
                     System.out.println("Выход из меню");

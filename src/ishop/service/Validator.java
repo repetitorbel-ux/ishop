@@ -26,7 +26,7 @@ public class Validator {
     }
 
     public String checkValue(String fieldName){
-//        UserService userService = new UserService();
+
         Scanner scanner = new Scanner(System.in);
         String newValue = "tempValue";
         boolean running = true;
