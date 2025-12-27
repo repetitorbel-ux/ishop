@@ -34,7 +34,7 @@ public class UserService {
     //Метод, реализующий задержку при выходе из программы
     public void delay() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(700);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -81,9 +81,9 @@ public class UserService {
         Optional<User> idUserMax = findMaxId(userExistList);
         if (idUserMax.isPresent()) {
             User idMax = idUserMax.get();
-            System.out.println("idMax = " + idMax.getId());
+//            System.out.println("idMax = " + idMax.getId());
             int id = idUserMax.get().getId() + 1;
-            System.out.println("Следующий id = " + id);
+            System.out.println("Следующий id = " + id + " (данная информация чисто для отладки)");
 
             String newLogin = validator.checkLogin();
 
@@ -94,6 +94,7 @@ public class UserService {
             String newSurname = validator.checkValue("фамилию");
 
             LocalDate birthdDay = validator.checkDate();
+            validator.validateInputDate(birthdDay);
 
             //Создание "введенного" пользователя
             User user = new User(id, newLogin, newPass, newName, newSurname, birthdDay, Role.USER);
@@ -101,7 +102,7 @@ public class UserService {
             //Создание коллекции пользователей
             List<User> userList = new ArrayList<>();
 
-            //Добавление в коллекцию списка из существубщих пользователей
+            //Добавление в коллекцию списка из существующих пользователей
             for (int i = 0; i < userExistList.size(); i++) {
                 userList.add(userExistList.get(i));
             }
@@ -120,14 +121,18 @@ public class UserService {
     /********************** Реализация п.2 baseMenu() - Авторизация ********************/
     //Метод начала авторизации - точка входа
     public void enter() {
+
         UserService userService = new UserService();
+        Validator validator = new Validator();
         Menu menu = new Menu();
 
-        String login = menu.askLogin();
+//        String login = menu.askLogin();
+        String login = menu.askValue("логин");
+
         User userCurrent = userService.findUserByLogin(login);//возвратили user
 
         if (userCurrent != null) {
-            User userAuth = userService.checkPassword(userCurrent);
+            User userAuth = validator.checkPassword(userCurrent);
             if (userAuth.getLogin().equals("vic_tut")) {
                 menu.menuAdmin();
             } else {
@@ -157,28 +162,13 @@ public class UserService {
             n--;
             if (n > 0){
                 System.out.println("Пользователь с таким логином не найден. Осталось попыток: " + n);
-                currentLogin = menu.askLogin(); // Запрашиваем логин снова
+//                currentLogin = menu.askLogin(); // Запрашиваем логин снова
+                currentLogin = menu.askValue("логин");
             }else {
                 System.out.println("Пользователь не найден. Попытки исчерпаны.");
             }
         }
         return null;// Если все попытки исчерпаны, возвращаем null
-    }
-
-    //Метод проверки введенного пароля
-    public User checkPassword(User user) {
-        Menu menu = new Menu();
-        boolean running = true;
-        while (running) {
-            String currentPass = menu.askPassword();
-            if (user.getPassword().equals(currentPass)) {
-                running = false;
-                break;
-            } else {
-                System.out.println("Введен не верный пароль, повторите ввод пароля");
-            }
-        }
-        return user;
     }
     //************************************************************************************************************* */
 
@@ -328,7 +318,7 @@ public class UserService {
         List<User> userList = getUserListFromFile();
         int n = 3;
         while (n > 0) {
-            Integer id = validator.checkValueInt("id");
+            Integer id = Integer.valueOf(validator.checkValue("id"));
             for (User user : userList) {
                 if (user.getId() == id) {
                     return id;
