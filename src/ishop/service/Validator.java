@@ -33,7 +33,7 @@ public class Validator {
         return input;
     }
 
-    //Метод проверки введенного значения
+    //Метод проверки введенного значения (почти универсальный)
     public String checkValue(String value) {
 
         Menu menu = new Menu();
@@ -78,25 +78,7 @@ public class Validator {
         }
         return newValue;
     }
-
-    //Метод проверки введенного пароля при авторизации
-    public User checkPassword(User user) {
-        Menu menu = new Menu();
-        int n = 3;
-        while (n > 0) {
-//            String currentPass = menu.askPassword();
-            String currentPass = menu.askValue("пароль");
-            if (user.getPassword().equals(currentPass)) {
-                return user;
-            }
-            n--;
-            if (n == 0) {
-                System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
-            } else
-                System.out.println("Введен не верный пароль, повторите ввод пароля. Количество оставшихся попыток: " + n);
-        }
-        return null;
-    }
+    //***************************************************************************************************************//
 
     /** ************** Блок валидации при регистрации пользователей ********************  */
     public LocalDate checkDate() {
@@ -120,38 +102,77 @@ public class Validator {
             if (n == 0) {
                 System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
                 break;
-            } else
+            } else{
                 System.out.println("Введен не верный пароль, повторите ввод пароля. Количество оставшихся попыток: " + n);
+            }
         }
         return null;
     }
 
     //Метод проверки логина на "пустоту", пробельные символы и уникальность
+    public String checkLogin2(){
+        Menu menu = new Menu();
+        UserService userService = new UserService();
+
+        for (int i = 3; i > 0; i--) {
+            String loginNew = menu.askValue("логин");
+
+            if (loginNew.isBlank()) {
+                System.out.println("Логин не может быть пустым. Введите корректный логин. Осталось попыток: " + (i - 1));
+                continue;
+            }
+
+            List<User> userExistList = userService.getUserListFromFile();
+            boolean loginFound = false;
+            for (User user : userExistList) {
+                if (user.getLogin().equals(loginNew)) {
+                    loginFound = true;
+                    break;
+                }
+            }
+
+            if (loginFound) {
+                System.out.println("Логин '" + loginNew + "' уже существует. Придумайте другой. Осталось попыток: " + (i - 1));
+                continue;
+            }
+            return loginNew;
+        }
+        System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+        menu.baseMenu();
+        return null;
+    }
+
+    //Метод проверки логина на "пустоту", пробельные символы и уникальность - OLD (не правильно работает - для удаления)
     public String checkLogin() {
 
+        Menu menu = new Menu();
         UserService userService = new UserService();
         List<User> userExistList = userService.getUserListFromFile();
 
-        Scanner scanner = new Scanner(System.in);
         String newLogin = "tempLogin";
-        boolean running = true;
-        while (running) {
-            boolean loginFound = false;
-            System.out.print("Введите login: ");
-            String login = scanner.nextLine();
 
-            newLogin = login;
-            if (!login.isBlank()) {
+        int n = 3;
+        while (n > 0) {
+            String currentLogin = menu.askValue("логин");
+            boolean loginFound = false;
+
+            newLogin = currentLogin;
+            if (!currentLogin.isBlank()) {
                 for (int i = 0; i < userExistList.size(); i++) {
                     String loginExist = userExistList.get(i).getLogin();
                     if (newLogin.equals(loginExist)) {
                         loginFound = true;
                     }
                 }
-                if (loginFound == true) {
-                    System.out.println("Логин " + "'" + newLogin + "'" + " уже существует. Придумайте другой логин");
-                } else {
-                    running = false;
+                n--;
+                if (n == 0) {
+                    System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+                }else {
+                    if (loginFound == true) {
+                        System.out.println("Логин " + "'" + newLogin + "'" + " уже существует. Придумайте другой логин");
+                    } else {
+                        break;
+                    }
                 }
             } else {
                 System.out.println("Логин " + "'" + newLogin + "'" + " не может быть пустым. Введите корректный логин");
@@ -162,4 +183,24 @@ public class Validator {
 //*******************************************************************************************************************
 
 
+    /** ************** Валидация при авторизации пользователей ********************  */
+    //Метод проверки введенного пароля при авторизации
+    public User checkPassword(User user) {
+        Menu menu = new Menu();
+        int n = 3;
+        while (n > 0) {
+            String currentPass = menu.askValue("пароль");
+            if (user.getPassword().equals(currentPass)) {
+                return user;
+            }
+            n--;
+            if (n == 0) {
+                System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+                menu.baseMenu();
+            } else{
+                System.out.println("Введен не верный пароль, повторите ввод пароля. Количество оставшихся попыток: " + n);
+            }
+        }
+        return null;
+    }
 }

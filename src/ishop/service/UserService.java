@@ -85,7 +85,7 @@ public class UserService {
             int id = idUserMax.get().getId() + 1;
             System.out.println("Следующий id = " + id + " (данная информация чисто для отладки)");
 
-            String newLogin = validator.checkLogin();
+            String newLogin = validator.checkLogin2();
 
             String newPass = validator.checkValue("пароль");
 
