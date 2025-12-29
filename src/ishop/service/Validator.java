@@ -19,13 +19,6 @@ public class Validator {
         return input;
     }
 
-    public Integer validateInputInt(Integer input) throws InvalidInputException {
-        if (input == null) {
-            throw new InvalidInputException("Ввод не может быть null. Повторите операцию.");
-        }
-        return input;
-    }
-
     public LocalDate validateInputDate(LocalDate input) throws InvalidInputException {
         if (input == null) {
             throw new InvalidInputException("Ввод не может быть null. Повторите операцию.");
@@ -59,26 +52,8 @@ public class Validator {
         }
         return null;
     }
-
-    //Old - для удаления
-    public Integer checkValueInt(String fieldName) {
-        Scanner scanner = new Scanner(System.in);
-        Integer newValue = null;
-        boolean running = true;
-        while (running) {
-            System.out.println("Введите " + fieldName);
-            Integer value = Integer.parseInt(scanner.nextLine());
-//            validateInputInt(value);//Проверка на null
-            newValue = value;
-            if (value instanceof Integer) {
-                running = false;
-            } else {
-                System.out.println("Поле" + " '" + fieldName + "'" + " не может быть пустым. Введите корректное значение");
-            }
-        }
-        return newValue;
-    }
     //***************************************************************************************************************//
+
 
     /** ************** Блок валидации при регистрации пользователей ********************  */
     public LocalDate checkDate() {
@@ -110,7 +85,7 @@ public class Validator {
     }
 
     //Метод проверки логина на "пустоту", пробельные символы и уникальность
-    public String checkLogin2(){
+    public String checkLogin(){
         Menu menu = new Menu();
         UserService userService = new UserService();
 
@@ -140,45 +115,6 @@ public class Validator {
         System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
         menu.baseMenu();
         return null;
-    }
-
-    //Метод проверки логина на "пустоту", пробельные символы и уникальность - OLD (не правильно работает - для удаления)
-    public String checkLogin() {
-
-        Menu menu = new Menu();
-        UserService userService = new UserService();
-        List<User> userExistList = userService.getUserListFromFile();
-
-        String newLogin = "tempLogin";
-
-        int n = 3;
-        while (n > 0) {
-            String currentLogin = menu.askValue("логин");
-            boolean loginFound = false;
-
-            newLogin = currentLogin;
-            if (!currentLogin.isBlank()) {
-                for (int i = 0; i < userExistList.size(); i++) {
-                    String loginExist = userExistList.get(i).getLogin();
-                    if (newLogin.equals(loginExist)) {
-                        loginFound = true;
-                    }
-                }
-                n--;
-                if (n == 0) {
-                    System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
-                }else {
-                    if (loginFound == true) {
-                        System.out.println("Логин " + "'" + newLogin + "'" + " уже существует. Придумайте другой логин");
-                    } else {
-                        break;
-                    }
-                }
-            } else {
-                System.out.println("Логин " + "'" + newLogin + "'" + " не может быть пустым. Введите корректный логин");
-            }
-        }
-        return newLogin;
     }
 //*******************************************************************************************************************
 

@@ -85,7 +85,7 @@ public class UserService {
             int id = idUserMax.get().getId() + 1;
             System.out.println("Следующий id = " + id + " (данная информация чисто для отладки)");
 
-            String newLogin = validator.checkLogin2();
+            String newLogin = validator.checkLogin();
 
             String newPass = validator.checkValue("пароль");
 
@@ -126,7 +126,6 @@ public class UserService {
         Validator validator = new Validator();
         Menu menu = new Menu();
 
-//        String login = menu.askLogin();
         String login = menu.askValue("логин");
 
         User userCurrent = userService.findUserByLogin(login);//возвратили user
@@ -137,7 +136,6 @@ public class UserService {
                 menu.menuAdmin();
             } else {
             menu.menuClient(userAuth);
-//                menu.menuClient(login);
             }
         }
     }
@@ -175,7 +173,7 @@ public class UserService {
 
     /********************** Реализация п.4 меню Client - Редактировать информацию о пользователе ********************/
     //Метод, изменяющий данные авторизованного пользователя
-    public void changeCurrentUser(User userForChange, String value, String valueChoice) {//public void writeChange(String loginCurrent, String value, String valueChoice)
+    public void changeCurrentUser(User userForChange, String value, String valueChoice) {
         List<User> userList = getUserListFromFile();
 
         int currentId = userForChange.getId();
@@ -260,17 +258,6 @@ public class UserService {
             }
         }
     }
-
-    //Метод, показывающий текущего пользователя - для удаления, так как пока не используется
-    public void showCurrentUser(String loginCurrent) {
-        List<User> userList = getUserListFromFile();
-        for (User u : userList) {
-            if (loginCurrent.equals(u.getLogin())) {
-                System.out.println(u);
-                break;
-            }
-        }
-    }
     //************************************************************************************************************* */
 
 
@@ -288,7 +275,7 @@ public class UserService {
 
     /*************************** Реализация п.8 меню Admin - Найти пользователя по логину ******************************/
     //Метод проверки введенного логина
-    public void showUsersByLogin() {//String targetLogin
+    public void showUsersByLogin() {
         List<User> userList = getUserListFromFile();
         Menu menu = new Menu();
         String loginExist = null;

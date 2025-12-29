@@ -1,11 +1,14 @@
 package ishop.service;
 
+import ishop.Menu;
 import ishop.entity.Good;
+import ishop.entity.User;
 import ishop.repository.GoodRepository;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,7 +19,6 @@ public class GoodService {
     public List<Good> getGoodListFromFile() {
         GoodRepository goodRepository = new GoodRepository();
         List<Good> goodExistList = goodRepository.getAllGoods();//В переменную типа List, в которую десериализуем файл с товарами
-//        System.out.println("Список товаров (getGoodListFromFile): " + goodExistList);
         return goodExistList;
     }
 
@@ -28,9 +30,7 @@ public class GoodService {
     //***************************************************************************************************************/
 
 
-    /**
-     * ****************************** Реализация п.1 - Показать список всех товаров
-     *******************************/
+    /******************************** Реализация п.1 - Показать список всех товаров *******************************/
     //Метод, выводящий все товары (1 - Показать список всех товаров)
     public void showGoods() {
         GoodService goodService = new GoodService();
@@ -43,12 +43,12 @@ public class GoodService {
     //***************************************************************************************************************/
 
 
-    /******************************** Реализация п.2 - Показать товары по категориям********************************/
-    //Метод, проверяющий введенной с консоли категории товара (2 - Показать товары по категориям)
+    /******************************** Реализация п.2 - Показать товары по категориям ********************************/
+    //Метод, проверяющий введенную с консоли категорию товара (2 - Показать товары по категориям)
     public void checkCategory(String targetCategory) {
         GoodService goodService = new GoodService();
         List<Good> goodList = goodService.getGoodListFromFile();
-        System.out.println();
+
         String categoryNotExist = null;
         for (Good good : goodList) {
             if (good.getCategory().equals(targetCategory)) {
@@ -56,7 +56,7 @@ public class GoodService {
             }
         }
         if (categoryNotExist == null) {
-            System.out.println("Категории товара " + '\'' + targetCategory + '\'' + " не существует. Введите корректное наименование категории");
+            System.out.println("\nКатегории товара " + '\'' + targetCategory + '\'' + " не существует. Введите корректное наименование категории");
         } else showGoodsByCategory(targetCategory);
     }
 
@@ -64,10 +64,10 @@ public class GoodService {
     public void showGoodsByCategory(String targetCategory) {
         GoodService goodService = new GoodService();
         List<Good> goodList = goodService.getGoodListFromFile();
-        System.out.println("Список товаров в категории " + targetCategory + ": ");
+
         for (Good good : goodList) {
             if (good.getCategory().equals(targetCategory)) {
-                System.out.println("Товары в категории " + targetCategory + ": '\'" + good + '\'');
+                System.out.println("Товары в категории " + targetCategory + ": " + good);
             }
         }
     }
@@ -79,10 +79,6 @@ public class GoodService {
     public void sortGoodByCategoryAndPrice() {
         GoodService goodService = new GoodService();
         List<Good> goodList;
-//        System.out.println("Before sort: " + goodService.getGoodListFromFile().toString());
-//        System.out.println("Before sort:");
-//        showGoods();
-//        System.out.println();
 
         goodList = goodService.getGoodListFromFile();
         goodList.sort(Comparator.comparing((Good good1) -> good1.getCategory())
@@ -99,55 +95,49 @@ public class GoodService {
     }
 
     /************************************** Реализация п.4 - Добавить товар **************************************/
-    //Ввод товара и создание коллекции  (4 - Добавить товар)
+    //Ввод товара и создание коллекции (4 - Добавить товар)
     public Good goodEntry(int id) {
 
-        Scanner scanner = new Scanner(System.in);
+        Menu menu = new Menu();
 
-        System.out.println("Введите название товара");
-        String nameGood = scanner.nextLine();
+        String nameGood = menu.askValue(" название товара");
 
-        System.out.println("Введите код товара");
-        String codeGood = scanner.nextLine();
+        String codeGood = menu.askValue(" код товара");
 
-        System.out.println("Введите бренд товара");
-        String brandGood = scanner.nextLine();
+        String brandGood = menu.askValue(" бренд товара");
 
-        System.out.println("Задайте категорию товара");
-        String categoryGood = scanner.nextLine();
+        String categoryGood = menu.askValue(" категорию товара");
 
-        System.out.println("Введите цену товара");
-        int priceGood = Integer.parseInt(scanner.nextLine());
+        int priceGood = Integer.parseInt(menu.askValue(" цену товара"));
 
-        System.out.println("Задайте ограничение по возрасту товара");
-        int ageLimit = Integer.parseInt(scanner.nextLine());
+        int ageLimit = Integer.parseInt(menu.askValue(" ограничение по возрасту"));
 
-        /**      * Изменить тип entryGood() на void????    */
         //Создание нового товара и коллекции товаров
         Good goodNew = new Good(id, nameGood, codeGood, brandGood, categoryGood, priceGood, ageLimit);
+
         List<Good> goodList = new ArrayList<>();//пустая коллекция
-//        System.out.println("Пустой список?: " + goodList);
+
         goodList.add(goodNew);//добавление нового (введенного) товара в коллекцию
-        System.out.println("Новый товар: " + goodList);
+
+        System.out.println("\nДобавленный товар: " + goodList);
+
         writeGood(goodList);//вызов метода, сериализующего товар
-        return goodNew; //нигде не используется
+
+        return goodNew;
     }
 
     //Метод, добавляющий товар (4 - Добавить товар)
     public void addGood() {
         GoodService goodService = new GoodService();
         List<Good> goodExistList = goodService.getGoodListFromFile();
+
         if (goodExistList.isEmpty()) {
-//            entryGood(goodExistList, path, 1);
             goodEntry(1);
         } else {
             Optional<Good> idGoodMax = findMaxGoodId(goodExistList);
             if (idGoodMax.isPresent()) {
                 Good idMax = idGoodMax.get();
-                System.out.println("idMax = " + idMax.getId());
                 int idNext = idGoodMax.get().getId() + 1;
-                System.out.println("Следующий id = " + idNext);
-
                 Good goodNext = goodEntry(idNext);
 
                 //Создание коллекции товаров
@@ -178,117 +168,137 @@ public class GoodService {
 
 
     /*** ******************************* Реализация п.5 - Обновить товар *******************************************/
-    //Метод для выбора товара по id, изменения товара и записи изменений в файл
-    public void updateGoodById() {
+    //Метод для выбора товара по id и вызова меню для обновления товара
+    public void callUpdateGoodById() {
 
-        List<Good> goodList = getGoodListFromFile();
+        Menu menu = new Menu();
+        GoodRepository goodRepository = new GoodRepository();
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("\nВведите id товара: ");
-        int id = Integer.parseInt(scanner.nextLine());
+        int goodId = Integer.parseInt(menu.askValue("id товара"));
+        Good good = goodRepository.findById(goodId);
 
-        Good good = findById(goodList, id);
         if (good == null) {
-            System.out.println("Товар не найден.");
+            System.out.println("Товар не найден. Повторите ввод id");
             return;
         }
 
-        System.out.println("Выбранный товар: " + good);
-
-        changeGood(good);  //Вызываем метод, который изменяет объект внутри списка
-//        message();
-
-        writeGood(goodList); //Сохраняем изменения в файл
+        menu.menuCurrentGood(good);
     }
 
-    public void message() {
-        System.out.println("\nИзменения сохранены.");
-    }
+    //Метод изменяющий (обновляющий) товар (String value)
+    public void changeCurrentGood(Good goodForChange, String value, String valueChoice) {
+        List<Good> goodList = getGoodListFromFile();
 
-    //Метод поиска товара по id
-    public Good findById(List<Good> list, int id) {
-        for (Good good : list) {
-            if (good.getId() == id) return good;
+        int currentId = goodForChange.getId();
+        String choice = valueChoice;
+        switch (choice) {
+            case "1":
+                for (Good good : goodList) {
+                    if (currentId == good.getId()) {
+                        good.setName(value);
+                        break;
+                    }
+                }
+                goodForChange.setName(value);//сохраняем изменения в объект для последующего вывода изменений
+                writeGood(goodList);
+                break;
+            case "2":
+                for (Good good : goodList) {
+                    if (currentId == good.getId()) {
+                        good.setCode(value);
+                        break;
+                    }
+                }
+                goodForChange.setCode(value);
+                writeGood(goodList);
+                break;
+            case "3":
+                for (Good good : goodList) {
+                    if (currentId == good.getId()) {
+                        good.setBrand(value);
+                        break;
+                    }
+                }
+                goodForChange.setBrand(value);
+                writeGood(goodList);
+                break;
+            case "4":
+                for (Good good : goodList) {
+                    if (currentId == good.getId()) {
+                        good.setCategory(value);
+                        break;
+                    }
+                }
+                goodForChange.setCategory(value);
+                writeGood(goodList);
+                break;
+            case "0":
+                System.out.println("Выход из меню");
+                return;
+            default:
+                System.out.println("Неверный ввод");
         }
-        return null;
     }
 
-    //Метод, изменяющий товар
-    public void changeGood(Good good) {
-        Scanner scanner = new Scanner(System.in);
+    //Метод изменяющий (обновляющий) товар (int value)
+    public void changeCurrentGoodInt(Good goodForChange, int value, String valueChoice) {
+        List<Good> goodList = getGoodListFromFile();
 
-        while (true) {
-            System.out.println("\nВыберете действие: \n" + "1 - Изменить название товара \n"
-                    + "2 - Изменить код товара \n"
-                    + "3 - Изменить бренд товара \n"
-                    + "4 - Изменить категорию товара \n"
-                    + "5 - Изменить цену товара \n"
-                    + "6 - Изменить возрастное ограничение товара \n"
-                    + "0. Выход \n");
-
-            String choice = scanner.nextLine();
-
-            switch (choice) {
-                case "1":
-                    System.out.println("Введите новое название:");
-                    good.setName(scanner.nextLine());
-                    break;
-                case "2":
-                    System.out.println("Введите новый код:");
-                    good.setCode(scanner.nextLine());
-                    break;
-                case "3":
-                    System.out.println("Введите новый бренд:");
-                    good.setBrand(scanner.nextLine());
-                    break;
-                case "4":
-                    System.out.println("Введите новую категорию:");
-                    good.setCategory(scanner.nextLine());
-                    break;
-                case "5":
-                    System.out.println("Введите новую цену:");
-                    good.setPrice(Integer.parseInt(scanner.nextLine()));
-                    break;
-                case "6":
-                    System.out.println("Введите новое возрастное ограничение:");
-                    good.setAgeLimit(Integer.parseInt(scanner.nextLine()));
-                    break;
-                case "0":
-                    System.out.println("Выход из меню обновления товара.");
-                    return;
-                default:
-                    System.out.println("Неверный ввод. Повторите.");
-            }
+        int currentId = goodForChange.getId();
+        switch (valueChoice) {
+            case "5":
+                for (Good good : goodList) {
+                    if (currentId == good.getId()) {
+                        good.setPrice(value);
+                        break;
+                    }
+                }
+                goodForChange.setPrice(value);
+                writeGood(goodList);
+                break;
+            case "6":
+                for (Good good : goodList) {
+                    if (currentId == good.getId()) {
+                        good.setAgeLimit(value);
+                        break;
+                    }
+                }
+                goodForChange.setAgeLimit(value);
+                writeGood(goodList);
+                break;
+            case "0":
+                System.out.println("Выход из меню");
+                return;
+            default:
+                System.out.println("Неверный ввод");
         }
     }
     //************************************************************************************************************* */
 
 
     /*********************************************** Реализация п. 6 ***********************************************/
-    public void delGoodById() {//List<Good> goodList, String path
-        GoodService goodService = new GoodService();
-        List<Good> goodList;
-        goodList = getGoodListFromFile();
+    //Метод, удаляющий товар
+    public void delGoodById() {
+        GoodRepository goodRepository = new GoodRepository();
+        List<Good> goodList = getGoodListFromFile();
+        Menu menu = new Menu();
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("\nВведите id товара для удаления: ");
-        int id = Integer.parseInt(scanner.nextLine());
+        int id = Integer.parseInt(menu.askValue(" id товара для удаления"));
 
         Good goodTemp = null;
-        Good good = findById(goodList, id);
-        if (good == null) {
+        Good goodFound = goodRepository.findById(id);
+        if (goodFound == null) {
             System.out.println("Товар не найден.");
         } else {
             List<Good> temp = new ArrayList<>();
-            for (Good g : goodList) {
-                if (g.getId() == id) {
-                    temp.add(good);
+            for (Good good : goodList) {
+                if (good.getId() == id) {
+                    temp.add(goodFound);
                 }
-                goodTemp = good;
+                goodTemp = goodFound;
             }
             System.out.print("\nУдаляемый товар: " + goodTemp + "\n");
             goodList.removeAll(temp);
-
         }
 
         writeGood(goodList); //Сохраняем изменения в файл
@@ -300,50 +310,4 @@ public class GoodService {
     }
     //*************************************************************************************************************/
 
-
 }
-
-/*
-//****************************to Delete***********************************************
-    //Пробный - For delete
-    public void changeGoodOld(Good good, int id) {
-        System.out.println("Наименование товара до изменения: " + '\'' + good.getName() + '\'');
-        good.setName("Велосипед");
-        System.out.println("Наименование товара после изменения: " + '\'' + good.getName() + '\'');
-    }
-
-    //Метод, выводящий товары определенного индентификатора - для удаления
-    public void showGoodsById(int id) {
-        GoodService goodService = new GoodService();
-        List<Good> goodList;
-        goodList = getGoodListFromFile();
-        System.out.println("Товар c id " + id + ": ");
-        for (Good good : goodList) {
-            if (good.getId() == id) {
-                System.out.println(good);
-//                scaner(good, path);
-            }
-        }
-    }
-
-    //Метод scaner: для удаления
-    public void scaner(Good good, String path) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println();
-        System.out.println("\nВыберете действие: \n" + "1 - Изменение названия товара \n"
-                + "2 - Изменение категории товара \n"
-                + "3 - Изменение цены товара \n");
-        String entry = scanner.nextLine();
-        switch (entry) {
-            case "1":
-//                changeGood(good, path);
-                break;
-            case "2":
-//                entryCategory(goodList, path);
-                break;
-            default:
-                System.out.println("Неверный ввод");
-
-        }
-    }
- */

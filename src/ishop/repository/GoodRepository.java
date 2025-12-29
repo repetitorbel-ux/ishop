@@ -1,7 +1,7 @@
 package ishop.repository;
 
 import ishop.entity.Good;
-import ishop.entity.User;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,16 @@ public class GoodRepository {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Good findById(int id) {
+
+        List<Good> goodList = getAllGoods();
+
+        for (Good good : goodList) {
+            if (good.getId() == id) return good;
+        }
+        return null;
     }
 
 

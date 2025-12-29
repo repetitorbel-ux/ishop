@@ -1,9 +1,9 @@
 package ishop;
 
+import ishop.entity.Good;
 import ishop.entity.User;
 import ishop.service.GoodService;
 import ishop.service.UserService;
-
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -35,7 +35,6 @@ public class Menu {
                     System.out.println("Неверный ввод");
             }
         }
-//        scanner.close();//Нужно закрывать поток????
     }
 
     /** ************************* Блок меню админа *************************************/
@@ -73,7 +72,7 @@ public class Menu {
                     goodService.addGood();
                     break;
                 case "5":
-                    goodService.updateGoodById();
+                    goodService.callUpdateGoodById();
                     break;
                 case "6":
                     goodService.delGoodById();
@@ -97,7 +96,6 @@ public class Menu {
                     System.out.println("Неверный ввод");
             }
         }
-//        scanner.close();
     }
 
     //Метод, изменяющий данные пользователя (администраторский доступ)
@@ -158,7 +156,67 @@ public class Menu {
             }
         }
     }
+
+    //Метод показа меню при изменении товара
+    public void menuCurrentGood(Good goodForChange) {
+        GoodService goodService = new GoodService();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Выбранный товар:" + goodForChange);
+
+        while (true) {
+            System.out.println("\nВыберете действие: \n"
+                    + "1 - Изменить название товара \n"
+                    + "2 - Изменить код товара \n"
+                    + "3 - Изменить бренд товара \n"
+                    + "4 - Изменить категорию товара \n"
+                    + "5 - Изменить цену товара \n"
+                    + "6 - Изменить возрастное ограничение товара \n"
+                    + "0 - Выход \n");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.print("Введите новое название товара: ");
+                    goodService.changeCurrentGood(goodForChange, scanner.nextLine(),  "1");
+                    System.out.println("Данные товара после изменения: " + goodForChange);
+                    break;
+                case "2":
+                    System.out.print("Введите новый код товара: ");
+                    goodService.changeCurrentGood(goodForChange, scanner.nextLine(),  "2");
+                    System.out.println("Данные товара после изменения: " + goodForChange);
+                    break;
+                case "3":
+                    System.out.print("Введите новый бренд товара: ");
+                    goodService.changeCurrentGood(goodForChange, scanner.nextLine(),  "3");
+                    System.out.println("Данные товара после изменения: " + goodForChange);
+                    break;
+                case "4":
+                    System.out.print("Введите новую категорию товара : ");
+                    goodService.changeCurrentGood(goodForChange, scanner.nextLine(),  "4");
+                    System.out.println("Данные товара после изменения: " + goodForChange);
+                    break;
+                case "5":
+                    System.out.print("Введите новую цену товара: ");
+                    goodService.changeCurrentGoodInt(goodForChange, Integer.parseInt(scanner.nextLine()), "5");
+                    System.out.println("Данные товара после изменения: " + goodForChange);
+                    break;
+                case "6":
+                    System.out.print("Введите новые возрастные ограничения товара: ");
+                    goodService.changeCurrentGoodInt(goodForChange, Integer.parseInt(scanner.nextLine()), "6");
+                    System.out.println("Данные товара после изменения: " + goodForChange);
+                    break;
+                case "0":
+                    System.out.println("Выход из меню");
+                    return;
+                default:
+                    System.out.println("Неверный ввод. Повторите.");
+            }
+        }
+    }
     //*****************************************************************************************************************//
+
 
     /** ************************* Блок меню клиента (не админа) *************************************/
     //Метод, реализующий меню клиента (авторизованного пользователя)
@@ -187,8 +245,6 @@ public class Menu {
                     break;
                 case "4":
                     menuCurrentUser(user);
-//                    menuCurrentUser(login);
-//                    userService.showCurrentUser(login);
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -199,10 +255,10 @@ public class Menu {
                     System.out.println("Неверный ввод");
             }
         }
-//        scanner.close();
     }
 
-    public void menuCurrentUser(User userForChange) {//public void changeUserItSelf(User userForChange)(String login)
+    //Метод, реализующий меню для выбора изменяемых полей клиента
+    public void menuCurrentUser(User userForChange) {
         UserService userService = new UserService();
         Scanner scanner = new Scanner(System.in);
 
@@ -255,16 +311,12 @@ public class Menu {
     }
     //***************************************************************************************************************//
 
+
     /************************************ Блок scanner *********************************/
     public String askValue(String value) {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Введите " + value + ": ");
-        return scanner.nextLine();
-    }
 
-    public String askBirthdayDate(String value) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Введите " + value + ": ");
+        System.out.print("\nВведите " + value + ": ");
         return scanner.nextLine();
     }
 
@@ -273,41 +325,18 @@ public class Menu {
         GoodService goodService = new GoodService();
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println();
-        System.out.print("Введите категорию товара ");
+
+        System.out.print("\nВведите категорию товара: ");
         String entryCategory = scanner.nextLine();
         goodService.checkCategory(entryCategory);
     }
 
     public String entryLoginUser() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("\nВведите логин пользователя ");
+
+        System.out.print("\nВведите логин пользователя: ");
         String entryLogin = scanner.nextLine();
         return entryLogin;
     }
 
-    /** Для удаления??? */
-    //Метод запроса логина при регистрации пользователя -
-    public int askId() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("\nВведите id пользователя: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        return id;
-    }
-
-    //Метод запроса логина при регистрации пользователя
-    public String askLogin() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Введите login: ");
-        String login = scanner.nextLine();
-        return login;
-    }
-
-    //Метод запроса пароля
-    public String askPassword() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Введите пароль: ");
-        String passCurrent = scanner.nextLine();
-        return passCurrent;
-    }
 }
