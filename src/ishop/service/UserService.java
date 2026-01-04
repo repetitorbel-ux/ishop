@@ -63,14 +63,10 @@ public class UserService {
         }));
     }
 
-    //Метод, создающий пользователей
-    public void createUser() {
-
-        UserService userService = new UserService();
-        Validator validator = new Validator();
+    public void createUser(String login, String password, String name, String surname, LocalDate birthday){
 
         //Считывание актуального списка пользователей
-        List<User> userExistList = userService.getUserListFromFile();
+        List<User> userExistList = getUserListFromFile();
 
         //Проверка, если список пустой, то вызываем метод, создающий пользователя-админа
         if (userExistList.isEmpty()) {
@@ -85,19 +81,8 @@ public class UserService {
             int id = idUserMax.get().getId() + 1;
             System.out.println("Следующий id = " + id + " (данная информация чисто для отладки)");
 
-            String newLogin = validator.checkLogin();
-
-            String newPass = validator.checkValue("пароль");
-
-            String newName = validator.checkValue("имя");
-
-            String newSurname = validator.checkValue("фамилию");
-
-            LocalDate birthdDay = validator.checkDate();
-            validator.validateInputDate(birthdDay);
-
             //Создание "введенного" пользователя
-            User user = new User(id, newLogin, newPass, newName, newSurname, birthdDay, Role.USER);
+            User user = new User(id, login, password, name, surname, birthday, Role.USER);
 
             //Создание коллекции пользователей
             List<User> userList = new ArrayList<>();
@@ -115,6 +100,58 @@ public class UserService {
             userRepository.saveUser(userList);
         }
     }
+    //Метод, создающий пользователей
+//    public void createUser() {
+//
+//        UserService userService = new UserService();
+//        Validator validator = new Validator();
+//
+//        //Считывание актуального списка пользователей
+//        List<User> userExistList = userService.getUserListFromFile();
+//
+//        //Проверка, если список пустой, то вызываем метод, создающий пользователя-админа
+//        if (userExistList.isEmpty()) {
+//            createAdmin();
+//        }
+//
+//        //Проверка десериализованного файла: если !null - ввод данных
+//        Optional<User> idUserMax = findMaxId(userExistList);
+//        if (idUserMax.isPresent()) {
+//            User idMax = idUserMax.get();
+////            System.out.println("idMax = " + idMax.getId());
+//            int id = idUserMax.get().getId() + 1;
+//            System.out.println("Следующий id = " + id + " (данная информация чисто для отладки)");
+//
+//            String newLogin = validator.checkLogin();
+//
+//            String newPass = validator.checkValue("пароль");
+//
+//            String newName = validator.checkValue("имя");
+//
+//            String newSurname = validator.checkValue("фамилию");
+//
+////            LocalDate birthdDay = validator.checkDate();
+////            validator.validateInputDate(birthdDay);
+//
+//            //Создание "введенного" пользователя
+//            User user = new User(id, newLogin, newPass, newName, newSurname, birthdDay, Role.USER);
+//
+//            //Создание коллекции пользователей
+//            List<User> userList = new ArrayList<>();
+//
+//            //Добавление в коллекцию списка из существующих пользователей
+//            for (int i = 0; i < userExistList.size(); i++) {
+//                userList.add(userExistList.get(i));
+//            }
+//
+//            //Добавление нового пользователя в список
+//            userList.add(user);
+//
+//            //Создание объекта типа UserRepository и вызов метода для сериализации списка
+//            UserRepository userRepository = new UserRepository();
+//            userRepository.saveUser(userList);
+//        }
+//    }
     //*****************************************************************************************************************/
 
 

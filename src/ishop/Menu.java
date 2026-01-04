@@ -4,10 +4,31 @@ import ishop.entity.Good;
 import ishop.entity.User;
 import ishop.service.GoodService;
 import ishop.service.UserService;
+
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Scanner;
 
+import static ishop.service.Validator.parseDate;
+
 public class Menu {
+
+    public Optional<LocalDate> askForBirthDate(){
+
+        for (int i = 3; i > 0; i--) {
+            String birthdayEntry = askValue("день рождения в формате yyyy-mm-dd");
+
+            if (birthdayEntry.isBlank()) {
+                System.out.println("Поле день рождения не может быть пустым. Повторите ввод. Осталось попыток: " + (i - 1));
+                continue;
+            }
+            Optional<LocalDate> birthdayOptinal = parseDate(birthdayEntry);
+            if(birthdayOptinal.isPresent()){
+                return birthdayOptinal;
+            }else System.out.println("Не корректный формат дня рождения. Повторите ввод. Осталось попыток: " + (i - 1));
+        }
+        return Optional.empty();
+    }
 
     //Метод, реализующий основное меню
     public void baseMenu() {
@@ -21,7 +42,8 @@ public class Menu {
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
-                    userService.createUser();
+
+//                    userService.createUser();
                     break;
                 case "2":
                     userService.enter();
