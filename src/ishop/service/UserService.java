@@ -1,22 +1,25 @@
 package ishop.service;
 
-import ishop.Menu;
 import ishop.constants.Role;
 import ishop.entity.User;
 import ishop.repository.UserRepository;
 
-import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class UserService {
     private static final String ADMIN = "vic_tut";
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
 
     /******************************* Методы для работы со слоем Repository *******************************/
     //Метод, получающий список существующих пользователей
     public List<User> getUserListFromFile() {
-        UserRepository userRepository = new UserRepository();
+//        UserRepository userRepository = new UserRepository();
         List<User> tempList = userRepository.getAllUsers();//В переменную типа List, в которую десериализуем файл с пользователями
 //        System.out.println(tempList);
         return tempList;
@@ -24,7 +27,7 @@ public class UserService {
 
     //Метод, сериализующий пользователя
     public void writeUser(List<User> userList) {
-        UserRepository userRepository = new UserRepository();
+//        UserRepository userRepository = new UserRepository();
         userRepository.saveUser(userList);
     }
     //*****************************************************************************************************************/
@@ -43,17 +46,29 @@ public class UserService {
 
 
     /**********************************************1 - Регистрация (создание) пользователя********************************************/
+    public boolean isAdmin(){
+
+        //Считывание актуального списка пользователей
+        List<User> userExistList = getUserListFromFile();
+
+        //Проверка, если список пустой, то вызываем метод, создающий пользователя-админа
+        if (userExistList.isEmpty()) {
+            createAdmin();
+            return true;
+        }
+        return false;
+    }
     //Метод, создающий пользователя-админа
     public void createAdmin() {
-        UserRepository userRepository = new UserRepository();
 
-        LocalDate adminBirthday = LocalDate.of(1974, 04, 25);
+        LocalDate adminBirthday = LocalDate.of(1974, 4, 25);
 
         User userAdmin = new User(0, ADMIN, "12345", "Viktor", "Ivanov", adminBirthday, Role.ADMIN);
         List<User> userList = new ArrayList<>();
         userList.add(userAdmin);
         userRepository.saveUser(userList);
-        System.out.println("Администратор создан.");
+//        UserRepository userRepository1 = new UserRepository();
+//        userRepository1.saveUser(userList);
     }
 
     //Метод поиска максимального значения в списке
@@ -74,11 +89,6 @@ public class UserService {
 
         //Считывание актуального списка пользователей
         List<User> userExistList = getUserListFromFile();
-
-        //Проверка, если список пустой, то вызываем метод, создающий пользователя-админа
-        if (userExistList.isEmpty()) {
-            createAdmin();
-        }
 
         //Проверка десериализованного файла: если !null - ввод данных
         Optional<User> idUserMax = findMaxId(userExistList);
@@ -103,7 +113,7 @@ public class UserService {
             userList.add(user);
 
             //Создание объекта типа UserRepository и вызов метода для сериализации списка
-            UserRepository userRepository = new UserRepository();
+//            UserRepository userRepository = new UserRepository();
             userRepository.saveUser(userList);
         }
     }
@@ -166,7 +176,7 @@ public class UserService {
     //Метод начала авторизации - точка входа
     public void enter() {
 
-        UserService userService = new UserService();
+//        UserService userService = new UserService();
         Validator validator = new Validator();
 //        Menu menu = new Menu();
 //

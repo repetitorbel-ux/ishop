@@ -26,10 +26,13 @@ public class Menu {
     //Метод, реализующий основное меню
     public void baseMenu() {
 
-        UserService userService = new UserService();
+        if(userService.isAdmin()){
+            System.out.println("Администратор создан.");
+        }
 
         boolean running = true;
-        Scanner scanner = new Scanner(System.in);
+//        Scanner scanner = new Scanner(System.in);
+
         while (running) {
             System.out.println("\nВыберете действие: \n" + "1 - Регистрация пользователя \n" + "2 - Войти в кабинет \n" + "0 - Выход \n");
             String choice = scanner.nextLine();
@@ -65,21 +68,21 @@ public class Menu {
         String login = String.valueOf(loginOptinal.get());
 
         Optional<String> passwordOptinal = checkValue("пароль");
-        if (loginOptinal.isEmpty()) {
+        if (passwordOptinal.isEmpty()) {
             System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
             return;
         }
         String password = String.valueOf(passwordOptinal.get());
 
         Optional<String> nameOptinal = checkValue("имя");
-        if (loginOptinal.isEmpty()) {
+        if (nameOptinal.isEmpty()) {
             System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
             return;
         }
         String name = String.valueOf(nameOptinal.get());
 
         Optional<String> surnameOptinal = checkValue("фамилию");
-        if (loginOptinal.isEmpty()) {
+        if (surnameOptinal.isEmpty()) {
             System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
             return;
         }
@@ -134,16 +137,17 @@ public class Menu {
 
         for (int i = 3; i > 0; i--) {
             String birthdayEntry = askValue("день рождения в формате yyyy-mm-dd");
+            if (birthdayEntry.isBlank()){
+                System.out.println("Поле '" + "день рождения"+ "' не может быть пустым. Повторите ввод. Осталось попыток: " + (i - 1));
+                continue;
+            }
 
             Optional<LocalDate> birthdayOptinal = parseDate(birthdayEntry);
-            if (birthdayOptinal.isPresent()) {
-                return birthdayOptinal;
-            }
-            if (i == 1) {
-                break;
-            } else {
+            if (!birthdayOptinal.isPresent()) {
                 System.out.println("Не корректный формат дня рождения. Повторите ввод. Осталось попыток: " + (i - 1));
+                continue;
             }
+            return birthdayOptinal;
         }
         return Optional.empty();
     }
@@ -154,7 +158,7 @@ public class Menu {
     //Метод, реализующий меню пользователя с правами администратора
     public void menuAdmin() {
 
-        UserService userService = new UserService();
+//        UserService userService = new UserService();
         GoodService goodService = new GoodService();
 
         boolean running = true;
@@ -214,7 +218,7 @@ public class Menu {
     //Метод, изменяющий данные пользователя (администраторский доступ)
     public void menuChangeUserByAdnin(Integer currentId) {
 
-        UserService userService = new UserService();
+//        UserService userService = new UserService();
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Выбранный пользователь:");
@@ -336,7 +340,7 @@ public class Menu {
      *************************************/
     //Метод, реализующий меню клиента (авторизованного пользователя)
     public void menuClient(User user) {//(User user)String login
-        UserService userService = new UserService();
+//        UserService userService = new UserService();
         GoodService goodService = new GoodService();
 
         boolean running = true;
@@ -374,7 +378,7 @@ public class Menu {
 
     //Метод, реализующий меню для выбора изменяемых полей клиента
     public void menuCurrentUser(User userForChange) {
-        UserService userService = new UserService();
+//        UserService userService = new UserService();
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Текущий пользователь:" + userForChange);
@@ -429,7 +433,7 @@ public class Menu {
 
     /************************************ Блок scanner *********************************/
     public String askValue(String value) {
-        Scanner scanner = new Scanner(System.in);
+//        Scanner scanner = new Scanner(System.in);
 
         System.out.print("Введите " + value + ": ");
         return scanner.nextLine();
