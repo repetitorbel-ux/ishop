@@ -63,6 +63,13 @@ public class UserService {
         }));
     }
 
+    public Optional<User> findExistUser(String login){
+
+        List<User> userList = getUserListFromFile();
+        return userList.stream().filter(user -> user.getLogin().equals(login)).findFirst();
+
+    }
+
     public void createUser(String login, String password, String name, String surname, LocalDate birthday){
 
         //Считывание актуального списка пользователей
@@ -161,48 +168,58 @@ public class UserService {
 
         UserService userService = new UserService();
         Validator validator = new Validator();
-        Menu menu = new Menu();
-
-        String login = menu.askValue("логин");
-
-        User userCurrent = userService.findUserByLogin(login);//возвратили user
-
-        if (userCurrent != null) {
-            User userAuth = validator.checkPassword(userCurrent);
-            if (userAuth.getLogin().equals("vic_tut")) {
-                menu.menuAdmin();
-            } else {
-            menu.menuClient(userAuth);
-            }
-        }
+//        Menu menu = new Menu();
+//
+//        String login = menu.askValue("логин");
+//
+//        User userCurrent = userService.findUserByLogin(login);//возвратили user
+//
+//        if (userCurrent != null) {
+//            User userAuth = validator.checkPassword(userCurrent);
+//            if (userAuth.getLogin().equals("vic_tut")) {
+//                menu.menuAdmin();
+//            } else {
+//            menu.menuClient(userAuth);
+//            }
+//        }
     }
+
+
+
+    /*
+    private Optional<User> findMaxId(List<User> userList) {
+        return userList.stream().max(Comparator.comparing(user -> {
+            return user.getId();
+        }));
+    }
+     */
 
     //Метод поиска пользователя по введенному логину
     public User findUserByLogin(String login) {
         List<User> userList = getUserListFromFile();
-        Menu menu = new Menu();
-
-        String currentLogin = login;
-        int n = 3;
-
-        while (n > 0) {
-            // Ищем пользователя в списке
-            for (User user : userList){
-                if (user.getLogin().equals(currentLogin)){
-                    System.out.println("Пользователь с логином '" + currentLogin + "' найден.");
-                    return user; // Если нашли, возвращаем пользователя
-                }
-            }
-            // Если пользователь не найден
-            n--;
-            if (n > 0){
-                System.out.println("Пользователь с таким логином не найден. Осталось попыток: " + n);
-//                currentLogin = menu.askLogin(); // Запрашиваем логин снова
-                currentLogin = menu.askValue("логин");
-            }else {
-                System.out.println("Пользователь не найден. Попытки исчерпаны.");
-            }
-        }
+//        Menu menu = new Menu();
+//
+//        String currentLogin = login;
+//        int n = 3;
+//
+//        while (n > 0) {
+//            // Ищем пользователя в списке
+//            for (User user : userList){
+//                if (user.getLogin().equals(currentLogin)){
+//                    System.out.println("Пользователь с логином '" + currentLogin + "' найден.");
+//                    return user; // Если нашли, возвращаем пользователя
+//                }
+//            }
+//            // Если пользователь не найден
+//            n--;
+//            if (n > 0){
+//                System.out.println("Пользователь с таким логином не найден. Осталось попыток: " + n);
+////                currentLogin = menu.askLogin(); // Запрашиваем логин снова
+//                currentLogin = menu.askValue("логин");
+//            }else {
+//                System.out.println("Пользователь не найден. Попытки исчерпаны.");
+//            }
+//        }
         return null;// Если все попытки исчерпаны, возвращаем null
     }
     //************************************************************************************************************* */
@@ -314,23 +331,23 @@ public class UserService {
     //Метод проверки введенного логина
     public void showUsersByLogin() {
         List<User> userList = getUserListFromFile();
-        Menu menu = new Menu();
-        String loginExist = null;
-
-        boolean running = true;
-        while (running) {
-            String targetLogin = menu.entryLoginUser();
-            for (User user : userList) {
-                if (user.getLogin().equals(targetLogin)) {
-                    loginExist = targetLogin;
-                    System.out.println(user);
-                    running = false;
-                }
-            }
-            if (loginExist == null) {
-                System.out.println("Пользователя с логином " + '\'' + targetLogin + '\'' + " не существует. Введите корректный логин");
-            }
-        }
+//        Menu menu = new Menu();
+//        String loginExist = null;
+//
+//        boolean running = true;
+//        while (running) {
+//            String targetLogin = menu.entryLoginUser();
+//            for (User user : userList) {
+//                if (user.getLogin().equals(targetLogin)) {
+//                    loginExist = targetLogin;
+//                    System.out.println(user);
+//                    running = false;
+//                }
+//            }
+//            if (loginExist == null) {
+//                System.out.println("Пользователя с логином " + '\'' + targetLogin + '\'' + " не существует. Введите корректный логин");
+//            }
+//        }
     }
     //*****************************************************************************************************************/
 
