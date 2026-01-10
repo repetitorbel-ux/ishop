@@ -43,7 +43,7 @@ public class Menu {
                     creatingUser();
                     break;
                 case "2":
-                    loginUser();
+                    loginUser2();
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -192,6 +192,41 @@ public class Menu {
             menuAdmin();
         } else {
             menuClient(userCurrent.get());
+        }
+    }
+
+    //Метод начала авторизации - точка входа
+    public void loginUser2() {
+
+        Optional<String> loginOptinal = checkLoginAuth("логин");
+        if (loginOptinal.isEmpty()) {
+            System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+            return;
+        }
+        String login = loginOptinal.get();
+
+        Optional<User> userCurrent = Optional.empty();
+        for (int i = 3; i > 0; i--) {
+
+            String password = askValue("пароль");
+
+            userCurrent = userService.authenticate(login, password);
+            if (userCurrent.isPresent()) {
+                break;
+            } else {
+                System.out.println("Пароль '" + password + "' не верный. Повторите ввод. Осталось попыток: " + (i - 1));
+                continue;
+            }
+        }
+
+        if(userCurrent.isPresent()){
+            if (userCurrent.get().getLogin().equals("vic_tut")) {
+                menuAdmin();
+            } else {
+                menuClient(userCurrent.get());
+            }
+        }else {
+            System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
         }
     }
 
