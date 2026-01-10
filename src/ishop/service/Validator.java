@@ -149,23 +149,5 @@ public class Validator {
 
 
     /** ************** Валидация при авторизации пользователей ********************  */
-    //Метод проверки введенного пароля при авторизации
-    public static User checkPassword(User user) {
-//        Menu menu = new Menu();
-//        int n = 3;
-//        while (n > 0) {
-//            String currentPass = menu.askValue("пароль");
-//            if (user.getPassword().equals(currentPass)) {
-//                return user;
-//            }
-//            n--;
-//            if (n == 0) {
-//                System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
-//                menu.baseMenu();
-//            } else{
-//                System.out.println("Введен не верный пароль, повторите ввод пароля. Количество оставшихся попыток: " + n);
-//            }
-//        }
-        return null;
-    }
+
 }

@@ -22,11 +22,13 @@ public class Menu {
         this.scanner = scanner;
     }
 
-    /** ******************************* Основное меню ******************************************************* **/
+    /**
+     * ****************************** Основное меню *******************************************************
+     **/
     //Метод, реализующий основное меню
     public void baseMenu() {
 
-        if(userService.isAdmin()){
+        if (userService.isAdmin()) {
             System.out.println("Администратор создан.");
         }
 
@@ -41,7 +43,7 @@ public class Menu {
                     creatingUser();
                     break;
                 case "2":
-                    userService.enter();
+                    loginUser();
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -56,7 +58,9 @@ public class Menu {
     //**************************************************************************************************************//
 
 
-    /** *********************************** Блок создания пользователя **************************************************************** **/
+    /**
+     * ********************************** Блок создания пользователя ****************************************************************
+     **/
     //Метод, создающий поля для создания пользователя
     public void creatingUser() {
 
@@ -103,12 +107,12 @@ public class Menu {
         for (int i = 3; i > 0; i--) {
             String valueInput = askValue(value);
 
-            if (valueInput.isBlank()){
+            if (valueInput.isBlank()) {
                 System.out.println("Поле '" + value + "' не может быть пустым. Повторите ввод. Осталось попыток: " + (i - 1));
                 continue;
             }
 
-            Optional<User> loginOptinal = userService.findExistUser(valueInput);
+            Optional<User> loginOptinal = userService.findUserByLogin(valueInput);
             if (loginOptinal.isPresent()) {
                 System.out.println("Логин '" + valueInput + "' уже существует. Придумайте другой. Осталось попыток: " + (i - 1));
                 continue;
@@ -123,7 +127,7 @@ public class Menu {
         for (int i = 3; i > 0; i--) {
             String valueInput = askValue(value);
 
-            if (valueInput.isBlank()){
+            if (valueInput.isBlank()) {
                 System.out.println("Поле '" + value + "' не может быть пустым. Повторите ввод. Осталось попыток: " + (i - 1));
                 continue;
             }
@@ -137,8 +141,8 @@ public class Menu {
 
         for (int i = 3; i > 0; i--) {
             String birthdayEntry = askValue("день рождения в формате yyyy-mm-dd");
-            if (birthdayEntry.isBlank()){
-                System.out.println("Поле '" + "день рождения"+ "' не может быть пустым. Повторите ввод. Осталось попыток: " + (i - 1));
+            if (birthdayEntry.isBlank()) {
+                System.out.println("Поле '" + "день рождения" + "' не может быть пустым. Повторите ввод. Осталось попыток: " + (i - 1));
                 continue;
             }
 
@@ -148,6 +152,50 @@ public class Menu {
                 continue;
             }
             return birthdayOptinal;
+        }
+        return Optional.empty();
+    }
+    //**************************************************************************************************************//
+
+
+    /************************************* Блок авторизации *************************************/
+    //Метод начала авторизации - точка входа
+    public void loginUser() {
+
+        Optional<String> loginOptinal = checkLoginAuth("логин");
+        if (loginOptinal.isEmpty()) {
+            System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+            return;
+        }
+        String login = String.valueOf(loginOptinal.get());
+
+        String password = askValue("пароль");
+
+        Optional<User> userCurrent = userService.authenticate(login, password);//возвратили user
+
+        if (userCurrent.isPresent() && userCurrent.get().getLogin().equals("vic_tut")) {
+            menuAdmin();
+        } else {
+            menuClient(userCurrent.get());
+        }
+    }
+
+    public Optional<String> checkLoginAuth(String value) {
+
+        for (int i = 3; i > 0; i--) {
+            String valueInput = askValue(value);
+
+            if (valueInput.isBlank()) {
+                System.out.println("Поле '" + value + "' не может быть пустым. Повторите ввод. Осталось попыток: " + (i - 1));
+                continue;
+            }
+
+            Optional<User> loginOptinal = userService.findUserByLogin(valueInput);
+            if (loginOptinal.isEmpty()) {
+                System.out.println("Логин '" + valueInput + "' не существует. Повторите ввод. Осталось попыток: " + (i - 1));
+                continue;
+            }
+            return Optional.of(valueInput);
         }
         return Optional.empty();
     }
