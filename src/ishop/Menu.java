@@ -167,11 +167,26 @@ public class Menu {
             System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
             return;
         }
-        String login = String.valueOf(loginOptinal.get());
+        String login = loginOptinal.get();
 
-        String password = askValue("пароль");
+        Optional<User> userCurrent = Optional.empty();
+        for (int i = 3; i > 0; i--) {
 
-        Optional<User> userCurrent = userService.authenticate(login, password);//возвратили user
+            String password = askValue("пароль");
+
+            userCurrent = userService.authenticate(login, password);
+            if (userCurrent.isPresent()) {
+                break;
+            } else {
+                if (i == 1) {
+                    System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+                    return;
+                } else {
+                    System.out.println("Пароль '" + password + "' не верный. Повторите ввод. Осталось попыток: " + (i - 1));
+                    continue;
+                }
+            }
+        }
 
         if (userCurrent.isPresent() && userCurrent.get().getLogin().equals("vic_tut")) {
             menuAdmin();

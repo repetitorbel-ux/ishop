@@ -125,7 +125,8 @@ public class UserService {
     public Optional<User> authenticate(String login, String password){
 
         List<User> userList = getUserListFromFile();
-        return userList.stream().filter(user -> user.getLogin().equals(login)).findFirst()
+        return userList.stream()
+                .filter(user -> user.getLogin().equals(login)).findFirst()
                 .filter(user -> user.getPassword().equals(password));
     }
 
