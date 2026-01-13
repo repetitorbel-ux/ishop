@@ -96,35 +96,35 @@ public class GoodService {
 
     /************************************** Реализация п.4 - Добавить товар **************************************/
     //Ввод товара и создание коллекции (4 - Добавить товар)
-    public Good goodEntry(int id) {
+//    public Good goodEntry(int id) {
 
-        Menu menu = new Menu();
+//        Menu menu = new Menu();
+//
+//        String nameGood = menu.askValue(" название товара");
+//
+//        String codeGood = menu.askValue(" код товара");
+//
+//        String brandGood = menu.askValue(" бренд товара");
+//
+//        String categoryGood = menu.askValue(" категорию товара");
 
-        String nameGood = menu.askValue(" название товара");
+//        int priceGood = Integer.parseInt(menu.askValue(" цену товара"));
+//
+//        int ageLimit = Integer.parseInt(menu.askValue(" ограничение по возрасту"));
+//
+//        //Создание нового товара и коллекции товаров
+//        Good goodNew = new Good(id, nameGood, codeGood, brandGood, categoryGood, priceGood, ageLimit);
 
-        String codeGood = menu.askValue(" код товара");
+//        List<Good> goodList = new ArrayList<>();//пустая коллекция
 
-        String brandGood = menu.askValue(" бренд товара");
+//        goodList.add(goodNew);//добавление нового (введенного) товара в коллекцию
 
-        String categoryGood = menu.askValue(" категорию товара");
+//        System.out.println("\nДобавленный товар: " + goodList);
+//
+//        writeGood(goodList);//вызов метода, сериализующего товар
 
-        int priceGood = Integer.parseInt(menu.askValue(" цену товара"));
-
-        int ageLimit = Integer.parseInt(menu.askValue(" ограничение по возрасту"));
-
-        //Создание нового товара и коллекции товаров
-        Good goodNew = new Good(id, nameGood, codeGood, brandGood, categoryGood, priceGood, ageLimit);
-
-        List<Good> goodList = new ArrayList<>();//пустая коллекция
-
-        goodList.add(goodNew);//добавление нового (введенного) товара в коллекцию
-
-        System.out.println("\nДобавленный товар: " + goodList);
-
-        writeGood(goodList);//вызов метода, сериализующего товар
-
-        return goodNew;
-    }
+//        return goodNew;
+//    }
 
     //Метод, добавляющий товар (4 - Добавить товар)
     public void addGood() {
@@ -132,13 +132,13 @@ public class GoodService {
         List<Good> goodExistList = goodService.getGoodListFromFile();
 
         if (goodExistList.isEmpty()) {
-            goodEntry(1);
+//            goodEntry(1);
         } else {
             Optional<Good> idGoodMax = findMaxGoodId(goodExistList);
             if (idGoodMax.isPresent()) {
                 Good idMax = idGoodMax.get();
                 int idNext = idGoodMax.get().getId() + 1;
-                Good goodNext = goodEntry(idNext);
+//                Good goodNext = goodEntry(idNext);
 
                 //Создание коллекции товаров
                 List<Good> goodList = new ArrayList<>();
@@ -149,7 +149,7 @@ public class GoodService {
                 }
 
                 //Добавление нового товара в список
-                goodList.add(goodNext);
+//                goodList.add(goodNext);
 
                 //Создание объекта типа GoodRepository и вызов метода для сериализации списка товаров
                 GoodRepository goodRepository = new GoodRepository();
@@ -171,18 +171,18 @@ public class GoodService {
     //Метод для выбора товара по id и вызова меню для обновления товара
     public void callUpdateGoodById() {
 
-        Menu menu = new Menu();
-        GoodRepository goodRepository = new GoodRepository();
-
-        int goodId = Integer.parseInt(menu.askValue("id товара"));
-        Good good = goodRepository.findById(goodId);
-
-        if (good == null) {
-            System.out.println("Товар не найден. Повторите ввод id");
-            return;
-        }
-
-        menu.menuCurrentGood(good);
+//        Menu menu = new Menu();
+//        GoodRepository goodRepository = new GoodRepository();
+//
+//        int goodId = Integer.parseInt(menu.askValue("id товара"));
+//        Good good = goodRepository.findById(goodId);
+//
+//        if (good == null) {
+//            System.out.println("Товар не найден. Повторите ввод id");
+//            return;
+//        }
+//
+//        menu.menuCurrentGood(good);
     }
 
     //Метод изменяющий (обновляющий) товар (String value)
@@ -281,32 +281,32 @@ public class GoodService {
     public void delGoodById() {
         GoodRepository goodRepository = new GoodRepository();
         List<Good> goodList = getGoodListFromFile();
-        Menu menu = new Menu();
-
-        int id = Integer.parseInt(menu.askValue(" id товара для удаления"));
-
-        Good goodTemp = null;
-        Good goodFound = goodRepository.findById(id);
-        if (goodFound == null) {
-            System.out.println("Товар не найден.");
-        } else {
-            List<Good> temp = new ArrayList<>();
-            for (Good good : goodList) {
-                if (good.getId() == id) {
-                    temp.add(goodFound);
-                }
-                goodTemp = goodFound;
-            }
-            System.out.print("\nУдаляемый товар: " + goodTemp + "\n");
-            goodList.removeAll(temp);
-        }
-
-        writeGood(goodList); //Сохраняем изменения в файл
-
-        if (!(goodTemp == null)) {
-            System.out.print("\nУдаление выполнено. " );
-            showGoods();
-        }
+//        Menu menu = new Menu();
+//
+//        int id = Integer.parseInt(menu.askValue(" id товара для удаления"));
+//
+//        Good goodTemp = null;
+//        Good goodFound = goodRepository.findById(id);
+//        if (goodFound == null) {
+//            System.out.println("Товар не найден.");
+//        } else {
+//            List<Good> temp = new ArrayList<>();
+//            for (Good good : goodList) {
+//                if (good.getId() == id) {
+//                    temp.add(goodFound);
+//                }
+//                goodTemp = goodFound;
+//            }
+//            System.out.print("\nУдаляемый товар: " + goodTemp + "\n");
+//            goodList.removeAll(temp);
+//        }
+//
+//        writeGood(goodList); //Сохраняем изменения в файл
+//
+//        if (!(goodTemp == null)) {
+//            System.out.print("\nУдаление выполнено. " );
+//            showGoods();
+//        }
     }
     //*************************************************************************************************************/
 

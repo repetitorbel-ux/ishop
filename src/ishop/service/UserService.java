@@ -1,22 +1,25 @@
 package ishop.service;
 
-import ishop.Menu;
 import ishop.constants.Role;
 import ishop.entity.User;
 import ishop.repository.UserRepository;
 
-import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class UserService {
     private static final String ADMIN = "vic_tut";
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
 
     /******************************* Методы для работы со слоем Repository *******************************/
     //Метод, получающий список существующих пользователей
     public List<User> getUserListFromFile() {
-        UserRepository userRepository = new UserRepository();
+//        UserRepository userRepository = new UserRepository();
         List<User> tempList = userRepository.getAllUsers();//В переменную типа List, в которую десериализуем файл с пользователями
 //        System.out.println(tempList);
         return tempList;
@@ -24,7 +27,7 @@ public class UserService {
 
     //Метод, сериализующий пользователя
     public void writeUser(List<User> userList) {
-        UserRepository userRepository = new UserRepository();
+//        UserRepository userRepository = new UserRepository();
         userRepository.saveUser(userList);
     }
     //*****************************************************************************************************************/
@@ -43,17 +46,29 @@ public class UserService {
 
 
     /**********************************************1 - Регистрация (создание) пользователя********************************************/
+    public boolean isAdmin(){
+
+        //Считывание актуального списка пользователей
+        List<User> userExistList = getUserListFromFile();
+
+        //Проверка, если список пустой, то вызываем метод, создающий пользователя-админа
+        if (userExistList.isEmpty()) {
+            createAdmin();
+            return true;
+        }
+        return false;
+    }
     //Метод, создающий пользователя-админа
     public void createAdmin() {
-        UserRepository userRepository = new UserRepository();
 
-        LocalDate adminBirthday = LocalDate.of(1974, 04, 25);
+        LocalDate adminBirthday = LocalDate.of(1974, 4, 25);
 
         User userAdmin = new User(0, ADMIN, "12345", "Viktor", "Ivanov", adminBirthday, Role.ADMIN);
         List<User> userList = new ArrayList<>();
         userList.add(userAdmin);
         userRepository.saveUser(userList);
-        System.out.println("Администратор создан.");
+//        UserRepository userRepository1 = new UserRepository();
+//        userRepository1.saveUser(userList);
     }
 
     //Метод поиска максимального значения в списке
@@ -63,19 +78,18 @@ public class UserService {
         }));
     }
 
-    //Метод, создающий пользователей
-    public void createUser() {
+    //Метод поиска существующего логина в списке пользователей
+    public Optional<User> findUserByLogin(String login){
 
-        UserService userService = new UserService();
-        Validator validator = new Validator();
+        List<User> userList = getUserListFromFile();
+        return userList.stream().filter(user -> user.getLogin().equals(login)).findFirst();
+    }
+
+    //Метод, создающий пользователя
+    public void createUser(String login, String password, String name, String surname, LocalDate birthday){
 
         //Считывание актуального списка пользователей
-        List<User> userExistList = userService.getUserListFromFile();
-
-        //Проверка, если список пустой, то вызываем метод, создающий пользователя-админа
-        if (userExistList.isEmpty()) {
-            createAdmin();
-        }
+        List<User> userExistList = getUserListFromFile();
 
         //Проверка десериализованного файла: если !null - ввод данных
         Optional<User> idUserMax = findMaxId(userExistList);
@@ -85,19 +99,8 @@ public class UserService {
             int id = idUserMax.get().getId() + 1;
             System.out.println("Следующий id = " + id + " (данная информация чисто для отладки)");
 
-            String newLogin = validator.checkLogin();
-
-            String newPass = validator.checkValue("пароль");
-
-            String newName = validator.checkValue("имя");
-
-            String newSurname = validator.checkValue("фамилию");
-
-            LocalDate birthdDay = validator.checkDate();
-            validator.validateInputDate(birthdDay);
-
             //Создание "введенного" пользователя
-            User user = new User(id, newLogin, newPass, newName, newSurname, birthdDay, Role.USER);
+            User user = new User(id, login, password, name, surname, birthday, Role.USER);
 
             //Создание коллекции пользователей
             List<User> userList = new ArrayList<>();
@@ -111,63 +114,55 @@ public class UserService {
             userList.add(user);
 
             //Создание объекта типа UserRepository и вызов метода для сериализации списка
-            UserRepository userRepository = new UserRepository();
             userRepository.saveUser(userList);
         }
     }
     //*****************************************************************************************************************/
 
 
-    /********************** Реализация п.2 baseMenu() - Авторизация ********************/
-    //Метод начала авторизации - точка входа
-    public void enter() {
+    /******************************** Реализация п.2 baseMenu() - Авторизация *******************************/
+    //Метод поиска а в списке пользователей
+    public Optional<User> authenticate(String login, String password){
 
-        UserService userService = new UserService();
-        Validator validator = new Validator();
-        Menu menu = new Menu();
+        List<User> userList = getUserListFromFile();
+        return userList.stream()
+                .filter(user -> user.getLogin().equals(login)).findFirst()
+                .filter(user -> user.getPassword().equals(password));
+    }
 
-        String login = menu.askValue("логин");
+    public Optional<User> findUserPassword(String password){
 
-        User userCurrent = userService.findUserByLogin(login);//возвратили user
-
-        if (userCurrent != null) {
-            User userAuth = validator.checkPassword(userCurrent);
-            if (userAuth.getLogin().equals("vic_tut")) {
-                menu.menuAdmin();
-            } else {
-            menu.menuClient(userAuth);
-            }
-        }
+        List<User> userList = getUserListFromFile();
+        return userList.stream().filter(user -> user.getPassword().equals(password)).findFirst();
     }
 
     //Метод поиска пользователя по введенному логину
-    public User findUserByLogin(String login) {
-        List<User> userList = getUserListFromFile();
-        Menu menu = new Menu();
+//    public User findUserByLogin(String login) {
+//        List<User> userList = getUserListFromFile();
 
-        String currentLogin = login;
-        int n = 3;
+//        String currentLogin = login;
+//        int n = 3;
 
-        while (n > 0) {
-            // Ищем пользователя в списке
-            for (User user : userList){
-                if (user.getLogin().equals(currentLogin)){
-                    System.out.println("Пользователь с логином '" + currentLogin + "' найден.");
-                    return user; // Если нашли, возвращаем пользователя
-                }
-            }
-            // Если пользователь не найден
-            n--;
-            if (n > 0){
-                System.out.println("Пользователь с таким логином не найден. Осталось попыток: " + n);
-//                currentLogin = menu.askLogin(); // Запрашиваем логин снова
-                currentLogin = menu.askValue("логин");
-            }else {
-                System.out.println("Пользователь не найден. Попытки исчерпаны.");
-            }
-        }
-        return null;// Если все попытки исчерпаны, возвращаем null
-    }
+//        while (n > 0) {
+//            // Ищем пользователя в списке
+//            for (User user : userList){
+//                if (user.getLogin().equals(currentLogin)){
+//                    System.out.println("Пользователь с логином '" + currentLogin + "' найден.");
+//                    return user; // Если нашли, возвращаем пользователя
+//                }
+//            }
+//            // Если пользователь не найден
+//            n--;
+//            if (n > 0){
+//                System.out.println("Пользователь с таким логином не найден. Осталось попыток: " + n);
+////                currentLogin = menu.askLogin(); // Запрашиваем логин снова
+//                currentLogin = menu.askValue("логин");
+//            }else {
+//                System.out.println("Пользователь не найден. Попытки исчерпаны.");
+//            }
+//        }
+//        return null;// Если все попытки исчерпаны, возвращаем null
+//    }
     //************************************************************************************************************* */
 
 
@@ -277,23 +272,23 @@ public class UserService {
     //Метод проверки введенного логина
     public void showUsersByLogin() {
         List<User> userList = getUserListFromFile();
-        Menu menu = new Menu();
-        String loginExist = null;
-
-        boolean running = true;
-        while (running) {
-            String targetLogin = menu.entryLoginUser();
-            for (User user : userList) {
-                if (user.getLogin().equals(targetLogin)) {
-                    loginExist = targetLogin;
-                    System.out.println(user);
-                    running = false;
-                }
-            }
-            if (loginExist == null) {
-                System.out.println("Пользователя с логином " + '\'' + targetLogin + '\'' + " не существует. Введите корректный логин");
-            }
-        }
+//        Menu menu = new Menu();
+//        String loginExist = null;
+//
+//        boolean running = true;
+//        while (running) {
+//            String targetLogin = menu.entryLoginUser();
+//            for (User user : userList) {
+//                if (user.getLogin().equals(targetLogin)) {
+//                    loginExist = targetLogin;
+//                    System.out.println(user);
+//                    running = false;
+//                }
+//            }
+//            if (loginExist == null) {
+//                System.out.println("Пользователя с логином " + '\'' + targetLogin + '\'' + " не существует. Введите корректный логин");
+//            }
+//        }
     }
     //*****************************************************************************************************************/
 
