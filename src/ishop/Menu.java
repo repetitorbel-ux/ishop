@@ -4,12 +4,10 @@ import ishop.entity.Good;
 import ishop.entity.User;
 import ishop.service.GoodService;
 import ishop.service.UserService;
-
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
-
-import static ishop.service.Validator.parseDate;
 
 public class Menu {
     private final UserService userService;
@@ -22,9 +20,7 @@ public class Menu {
         this.scanner = scanner;
     }
 
-    /**
-     * ****************************** Основное меню *******************************************************
-     **/
+    /** ****************************** Основное меню *********************************************************/
     //Метод, реализующий основное меню
     public void baseMenu() {
 
@@ -58,9 +54,7 @@ public class Menu {
     //**************************************************************************************************************//
 
 
-    /**
-     * ********************************** Блок создания пользователя ****************************************************************
-     **/
+    /*********************** Блок создания пользователя ***************************************************************/
     //Метод, создающий поля для создания пользователя
     public void creatingUser() {
 
@@ -146,7 +140,7 @@ public class Menu {
                 continue;
             }
 
-            Optional<LocalDate> birthdayOptinal = parseDate(birthdayEntry);
+            Optional<LocalDate> birthdayOptinal = userService.parseDate(birthdayEntry);
             if (!birthdayOptinal.isPresent()) {
                 System.out.println("Не корректный формат дня рождения. Повторите ввод. Осталось попыток: " + (i - 1));
                 continue;
@@ -252,11 +246,10 @@ public class Menu {
     //**************************************************************************************************************//
 
 
-    /*************************** Блок меню админа*************************************/
+    /******************************* Блок меню админа*************************************/
     //Метод, реализующий меню пользователя с правами администратора
     public void menuAdmin() {
 
-//        UserService userService = new UserService();
         GoodService goodService = new GoodService();
 
         boolean running = true;
@@ -293,14 +286,15 @@ public class Menu {
                     goodService.delGoodById();
                     break;
                 case "7":
-                    userService.showUsers();
+                    usersShow();
                     break;
                 case "8":
-                    userService.showUsersByLogin();
+                    showUserByLogin();
                     break;
                 case "9":
-                    Integer idFound = userService.findById();
-                    if (idFound != null) menuChangeUserByAdnin(idFound);
+//                    Integer idFound = userService.findById();
+//                    if (idFound != null) menuChangeUserByAdnin(idFound);
+                    changeUserByAdmin();
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -313,14 +307,58 @@ public class Menu {
         }
     }
 
-    //Метод, изменяющий данные пользователя (администраторский доступ)
-    public void menuChangeUserByAdnin(Integer currentId) {
+    public void usersShow(){
 
-//        UserService userService = new UserService();
-        Scanner scanner = new Scanner(System.in);
+        List<User> userList = userService.getAllUsers();
+        System.out.println("Список пользователей:");
+        for (User user : userList) {
+            System.out.println(user);
+        }
+    }
 
-        System.out.println("Выбранный пользователь:");
-        userService.showCurrentUser(currentId);
+    //Метод поиска пользователя по логину
+    public void showUserByLogin(){
+
+        String login = askValue("логин");
+
+        Optional<User> loginOptinalFound = userService.findUserByLogin(login);
+        if(loginOptinalFound.isPresent()){
+            User loginCurrent = loginOptinalFound.get();
+            System.out.println("\nПользователь с логином '" + login + "\':\n" + loginCurrent);
+        }else System.out.println("\nПользователь с логином '" + login + "\' отсутствует. Введете корректный логин");
+    }
+
+
+    public void changeUserByAdmin(){
+
+        try {
+            int idInput = askId();
+            Optional<User> idOptinal = userService.findById(idInput);
+
+            if (idOptinal.isEmpty()) {
+                System.out.println("\nПользователь с id '" +  idInput + "' отсутствует. Введите корректный id");
+                return;
+            }
+            int id = idOptinal.get().getId();
+            menuChangeUserByAdmin(id);
+        }catch (NumberFormatException e){
+            System.out.println("Неверный формат id. Введите число.");
+        }
+    }
+
+    Optional<User> userShow(int currentId){
+        Optional<User> currentUser = userService.findById(currentId);
+        if(currentUser.isPresent()){
+            return currentUser;
+        }
+        return Optional.empty();
+    }
+
+    //Метод, реализующий меню для изменения пользователя (администраторский доступ)
+    public void menuChangeUserByAdmin(int currentId) {
+
+        Optional<User> currentUser = userShow(currentId);
+        System.out.println("Выбранный пользователь: " + currentUser.get());
 
         while (true) {
             System.out.println("\nВыберете действие: \n" + "1 - Изменить логин пользователя \n"
@@ -334,34 +372,39 @@ public class Menu {
 
             switch (choice) {
                 case "1":
-                    System.out.println("Введите новый логин:");
+                    System.out.print("Введите новый логин: ");
                     userService.changeUserById(currentId, scanner.nextLine(), "1");
-                    System.out.println("Текущие данные пользователя:");
-                    userService.showCurrentUser(currentId);
+                    Optional<User> currentUser1 = userShow(currentId);
+                    System.out.println("\nТекущие данные пользователя: "+ currentUser1.get());
+
                     break;
                 case "2":
-                    System.out.println("Введите новый пароль:");
+                    System.out.print ("Введите новый пароль: ");
                     userService.changeUserById(currentId, scanner.nextLine(), "2");
-                    System.out.println("Текущие данные пользователя:");
-                    userService.showCurrentUser(currentId);
+                    System.out.print ("Текущие данные пользователя: ");
+                    Optional<User> currentUser2 = userShow(currentId);
+                    System.out.println("\nТекущие данные пользователя: "+ currentUser2.get());
                     break;
                 case "3":
                     System.out.println("Введите новое имя:");
                     userService.changeUserById(currentId, scanner.nextLine(), "3");
                     System.out.println("Текущие данные пользователя:");
-                    userService.showCurrentUser(currentId);
+                    Optional<User> currentUser3 = userShow(currentId);
+                    System.out.println("\nТекущие данные пользователя: "+ currentUser3.get());
                     break;
                 case "4":
-                    System.out.println("Введите новую фамилию:");
+                    System.out.print("Введите новую фамилию: ");
                     userService.changeUserById(currentId, scanner.nextLine(), "4");
-                    System.out.println("Текущие данные пользователя:");
-                    userService.showCurrentUser(currentId);
+                    System.out.print ("Текущие данные пользователя: ");
+                    Optional<User> currentUser4 = userShow(currentId);
+                    System.out.println("\nТекущие данные пользователя: "+ currentUser4.get());
                     break;
                 case "5":
-                    System.out.println("Введите день рождения:");
+                    System.out.print("Введите день рождения: ");
                     userService.changeUserByIdLC(currentId, LocalDate.parse(scanner.nextLine()), "5");
-                    System.out.println("Текущие данные пользователя:");
-                    userService.showCurrentUser(currentId);
+                    System.out.print("Текущие данные пользователя: ");
+                    Optional<User> currentUser5 = userShow(currentId);
+                    System.out.println("\nТекущие данные пользователя: "+ currentUser5.get());
                     break;
                 case "0":
                     System.out.println("Выход из меню обновления товара.");
@@ -372,7 +415,7 @@ public class Menu {
         }
     }
 
-    //Метод показа меню при изменении товара
+    //Метод, реализующий меню при изменении товара
     public void menuCurrentGood(Good goodForChange) {
         GoodService goodService = new GoodService();
         Scanner scanner = new Scanner(System.in);
@@ -433,9 +476,7 @@ public class Menu {
     //*****************************************************************************************************************//
 
 
-    /**
-     * ************************ Блок меню клиента (не админа)
-     *************************************/
+    /************************** Блок меню клиента (не админа) *************************************/
     //Метод, реализующий меню клиента (авторизованного пользователя)
     public void menuClient(User user) {//(User user)String login
 //        UserService userService = new UserService();
@@ -476,8 +517,6 @@ public class Menu {
 
     //Метод, реализующий меню для выбора изменяемых полей клиента
     public void menuCurrentUser(User userForChange) {
-//        UserService userService = new UserService();
-        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Текущий пользователь:" + userForChange);
 
@@ -531,12 +570,14 @@ public class Menu {
 
     /************************************ Блок scanner *********************************/
     public String askValue(String value) {
-//        Scanner scanner = new Scanner(System.in);
-
         System.out.print("Введите " + value + ": ");
         return scanner.nextLine();
     }
 
+    public int askId() {
+        System.out.print("Введите id: ");
+        return Integer.parseInt(scanner.nextLine());
+    }
 
     //Меню запроса категории товара (2 - Показать товары по категориям)
     public void entryCategory() {
@@ -547,14 +588,6 @@ public class Menu {
         System.out.print("\nВведите категорию товара: ");
         String entryCategory = scanner.nextLine();
         goodService.checkCategory(entryCategory);
-    }
-
-    public String entryLoginUser() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("\nВведите логин пользователя: ");
-        String entryLogin = scanner.nextLine();
-        return entryLogin;
     }
 
 }
