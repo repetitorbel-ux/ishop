@@ -25,47 +25,20 @@ public class Validator {
         }
         return input;
     }
-
-    //Метод проверки введенного значения (почти универсальный)
-    public static String checkValue(String value) {
-
-//        Menu menu = new Menu();
-//        UserService userService = new UserService();
-//
-//        int n = 3;
-//        while (n > 0) {
-//            if(value.equals("id")){
-//                userService.showUsers();
-//            }
-//            String valueInput = menu.askValue(value);
-//            validateInput(valueInput);//Проверка на null
-//            if (!valueInput.isBlank()) {
-//                return valueInput;
-//            }
-//            n--;
-//            if (n == 0) {
-//                System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
-//                menu.baseMenu();
-//            } else{
-//                System.out.println("Поле" + "'" + valueInput + "'" + " не может быть пустым. Введите корректное значение. Количество оставшихся попыток: " + n);
-//            }
-//        }
-        return null;
-    }
     //***************************************************************************************************************//
 
 
     /** ************** Блок валидации при регистрации пользователей ********************  */
-    public static Optional<LocalDate> parseDate(String dateString){
-
-        try {
-            DateTimeFormatter formatBirthdDay = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate birthdDay = LocalDate.parse(dateString, formatBirthdDay);
-            return Optional.of(birthdDay);
-        } catch (DateTimeException e) {
-            return Optional.empty();
-        }
-    }
+//    public static Optional<LocalDate> parseDate(String dateString){
+//
+//        try {
+//            DateTimeFormatter formatBirthdDay = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//            LocalDate birthdDay = LocalDate.parse(dateString, formatBirthdDay);
+//            return Optional.of(birthdDay);
+//        } catch (DateTimeException e) {
+//            return Optional.empty();
+//        }
+//    }
 
     public static Optional<String> checkValue2(String valueInput){
 
