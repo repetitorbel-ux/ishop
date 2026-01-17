@@ -12,7 +12,7 @@ public class GoodService {
         this.goodRepository = goodRepository;
     }
 
-    /******************************* Методы слоя Repository *******************************/
+    /******************************* Методы для работы со слоем Repository *******************************/
     //Метод, получающий список уже существующих товаров
     public List<Good> getGoodListFromFile() {
         List<Good> goodExistList = goodRepository.getAllGoods();//В переменную типа List, в которую десериализуем файл с товарами
@@ -27,49 +27,32 @@ public class GoodService {
     //***************************************************************************************************************/
 
 
-    /******************************** Реализация п.1 - Показать список всех товаров *******************************/
-    //Метод, выводящий все товары (1 - Показать список всех товаров)
-    public void showGoodsOld() {
-
-        List<Good> goodList = getGoodListFromFile();
-        System.out.println("Актуальный писок товаров:");
-        for (Good good : goodList) {
-            System.out.println(good);
-        }
-    }
-
+    /******************************** Блок для получения списка товаров *******************************/
+    //Метод, получающий список всех товаров (1 - Показать список всех товаров)
     public List<Good> getGoods() {
 
         List<Good> goodList = getGoodListFromFile();
         return goodList;
     }
-    //***************************************************************************************************************/
 
-    /** *************** Реализация п.2 - Показать товары **************/
-    //Метод поиска товара по категории
-    public Optional<Good> getGoodsByCategory(String category) {
+    //Метод, получающий список товаров заданной категории
+    public Optional<List<Good>> getGoodsByCategory(String category) {
 
+        Optional<List<Good>> goodListByCategory = Optional.empty();
         List<Good> goodList = getGoodListFromFile();
+        List<Good> goodListNew = new ArrayList<>();
+
         for (Good good : goodList) {
             if (good.getCategory().equals(category)) {
-                return Optional.of(good);
+                goodListNew.add(good);
+                goodListByCategory = Optional.of(goodListNew);
             }
         }
-        return Optional.empty();
+        return goodListByCategory;
     }
 
-
-    /** *************** Реализация п.3 - Показать товары по стоимости и категориям (с сортировкой)**************/
-    //Метод, выводящий товары сортированные по категории и затем по цене (3 - Показать товары по стоимости и категориям (с сортировкой))
-    public void sortGoodByCategoryAndPrice() {
-
-        List<Good> goodList = getGoodListFromFile();
-        goodList.sort(Comparator.comparing((Good good1) -> good1.getCategory())
-                .thenComparing(good -> good.getPrice()));
-//        showGoods(goodList);
-    }
-
-    public Optional<List<Good>> getGoodsByCategoryAndPrice() {
+    //Метод, получающий список товаров сортированных по категории и затем по цене (3 - Показать товары по стоимости и категориям (с сортировкой))
+        public Optional<List<Good>> getGoodsByCategoryAndPrice() {
 
         List<Good> goodList = getGoodListFromFile();
 
@@ -77,18 +60,7 @@ public class GoodService {
                 .thenComparing(good2 -> good2.getPrice()));
         return Optional.of(goodList);
     }
-
-    public List<Good> sortGoodsByCategoryAndPrice() {
-
-        List<Good> goodList = getGoodListFromFile();
-        goodList.sort(Comparator.comparing((Good good1) -> good1.getCategory())
-                .thenComparing(good2 -> good2.getPrice()));
-        return goodList;
-    }
-
-    //** ************************************************************************************************************* */
-
-
+    //**************************************************************************************************************** */
 
 
     /************************************** Реализация п.4 - Добавить товар **************************************/

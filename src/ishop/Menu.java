@@ -320,10 +320,14 @@ public class Menu {
 
         String category = askValue("категорию");
 
-        Optional<Good> categoryOptinalFound = goodService.getGoodsByCategory(category);
-        if(categoryOptinalFound.isPresent()){
-            Good categoryCurrent = categoryOptinalFound.get();
-            System.out.println("\nТовар(ы) категории '" + category + "\':\n" + categoryCurrent);
+        Optional<List<Good>> goodListByCategoryOptinal = goodService.getGoodsByCategory(category);
+
+        if(goodListByCategoryOptinal.isPresent()){
+            List<Good> goodListByCategory = goodListByCategoryOptinal.get();
+            System.out.println("\nТовар(ы) категории '" + category + "\':");
+            for (Good good : goodListByCategory){
+                System.out.println(good);
+            }
         }else System.out.println("\nТовар(ы) категории '" + category + "\' отсутствуют. Введете корректную категорию");
     }
 
@@ -531,13 +535,13 @@ public class Menu {
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
-//                    goodService.showGoods();
+                    goodsShow();
                     break;
                 case "2":
-                    entryCategory();
+                    showGoodsByCategory();
                     break;
                 case "3":
-                    goodService.sortGoodByCategoryAndPrice();
+                    showSortGoods();
                     break;
                 case "4":
                     menuCurrentUser(user);
