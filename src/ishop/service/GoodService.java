@@ -1,23 +1,20 @@
 package ishop.service;
 
-import ishop.Menu;
 import ishop.entity.Good;
-import ishop.entity.User;
 import ishop.repository.GoodRepository;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class GoodService {
+    private final GoodRepository goodRepository;
 
-    /******************************* Методы слоя Repository *******************************/
+    public GoodService(GoodRepository goodRepository) {
+        this.goodRepository = goodRepository;
+    }
+
+    /******************************* Методы для работы со слоем Repository *******************************/
     //Метод, получающий список уже существующих товаров
     public List<Good> getGoodListFromFile() {
-        GoodRepository goodRepository = new GoodRepository();
         List<Good> goodExistList = goodRepository.getAllGoods();//В переменную типа List, в которую десериализуем файл с товарами
         return goodExistList;
     }
@@ -30,69 +27,41 @@ public class GoodService {
     //***************************************************************************************************************/
 
 
-    /******************************** Реализация п.1 - Показать список всех товаров *******************************/
-    //Метод, выводящий все товары (1 - Показать список всех товаров)
-    public void showGoods() {
-        GoodService goodService = new GoodService();
-        List<Good> goodList = goodService.getGoodListFromFile();
-        System.out.println("Актуальный писок товаров:");
-        for (Good good : goodList) {
-            System.out.println(good);
-        }
+    /******************************** Блок для получения списка товаров *******************************/
+    //Метод, получающий список всех товаров (1 - Показать список всех товаров)
+    public List<Good> getGoods() {
+
+        List<Good> goodList = getGoodListFromFile();
+        return goodList;
     }
-    //***************************************************************************************************************/
 
+    //Метод, получающий список товаров заданной категории
+    public Optional<List<Good>> getGoodsByCategory(String category) {
 
-    /******************************** Реализация п.2 - Показать товары по категориям ********************************/
-    //Метод, проверяющий введенную с консоли категорию товара (2 - Показать товары по категориям)
-    public void checkCategory(String targetCategory) {
-        GoodService goodService = new GoodService();
-        List<Good> goodList = goodService.getGoodListFromFile();
+        Optional<List<Good>> goodListByCategory = Optional.empty();
+        List<Good> goodList = getGoodListFromFile();
+        List<Good> goodListNew = new ArrayList<>();
 
-        String categoryNotExist = null;
         for (Good good : goodList) {
-            if (good.getCategory().equals(targetCategory)) {
-                categoryNotExist = targetCategory;
+            if (good.getCategory().equals(category)) {
+                goodListNew.add(good);
+                goodListByCategory = Optional.of(goodListNew);
             }
         }
-        if (categoryNotExist == null) {
-            System.out.println("\nКатегории товара " + '\'' + targetCategory + '\'' + " не существует. Введите корректное наименование категории");
-        } else showGoodsByCategory(targetCategory);
+        return goodListByCategory;
     }
 
-    //Метод, выводящий товары определенной категории (2 - Показать товары по категориям)
-    public void showGoodsByCategory(String targetCategory) {
-        GoodService goodService = new GoodService();
-        List<Good> goodList = goodService.getGoodListFromFile();
+    //Метод, получающий список товаров сортированных по категории и затем по цене (3 - Показать товары по стоимости и категориям (с сортировкой))
+        public Optional<List<Good>> getGoodsByCategoryAndPrice() {
 
-        for (Good good : goodList) {
-            if (good.getCategory().equals(targetCategory)) {
-                System.out.println("Товары в категории " + targetCategory + ": " + good);
-            }
-        }
-    }
-    //*************************************************************************************************************** */
+        List<Good> goodList = getGoodListFromFile();
 
-
-    /** *************** Реализация п.3 - Показать товары по стоимости и категориям (с сортировкой)**************/
-    //Метод, выводящий товары сортированные по категории и затем по цене (3 - Показать товары по стоимости и категориям (с сортировкой))
-    public void sortGoodByCategoryAndPrice() {
-        GoodService goodService = new GoodService();
-        List<Good> goodList;
-
-        goodList = goodService.getGoodListFromFile();
         goodList.sort(Comparator.comparing((Good good1) -> good1.getCategory())
-                .thenComparing(good -> good.getPrice()));
-        showGoods(goodList);
-        }
-    //** ************************************************************************************************************* */
-
-    public void showGoods(List<Good> goodList) {
-        System.out.println("Товары, сортированные по категории и затем по цене:");
-        for (Good good : goodList) {
-            System.out.println(good);
-        }
+                .thenComparing(good2 -> good2.getPrice()));
+        return Optional.of(goodList);
     }
+    //**************************************************************************************************************** */
+
 
     /************************************** Реализация п.4 - Добавить товар **************************************/
     //Ввод товара и создание коллекции (4 - Добавить товар)
@@ -128,8 +97,7 @@ public class GoodService {
 
     //Метод, добавляющий товар (4 - Добавить товар)
     public void addGood() {
-        GoodService goodService = new GoodService();
-        List<Good> goodExistList = goodService.getGoodListFromFile();
+        List<Good> goodExistList = getGoodListFromFile();
 
         if (goodExistList.isEmpty()) {
 //            goodEntry(1);
