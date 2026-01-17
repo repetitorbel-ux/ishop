@@ -29,7 +29,6 @@ public class Menu {
         }
 
         boolean running = true;
-//        Scanner scanner = new Scanner(System.in);
 
         while (running) {
             System.out.println("\nВыберете действие: \n" + "1 - Регистрация пользователя \n" + "2 - Войти в кабинет \n" + "0 - Выход \n");
@@ -106,7 +105,7 @@ public class Menu {
                 continue;
             }
 
-            Optional<User> loginOptinal = userService.findUserByLogin(valueInput);
+            Optional<User> loginOptinal = userService.getUserByLogin(valueInput);
             if (loginOptinal.isPresent()) {
                 System.out.println("Логин '" + valueInput + "' уже существует. Придумайте другой. Осталось попыток: " + (i - 1));
                 continue;
@@ -234,7 +233,7 @@ public class Menu {
                 continue;
             }
 
-            Optional<User> loginOptinal = userService.findUserByLogin(valueInput);
+            Optional<User> loginOptinal = userService.getUserByLogin(valueInput);
             if (loginOptinal.isEmpty()) {
                 System.out.println("Логин '" + valueInput + "' не существует. Повторите ввод. Осталось попыток: " + (i - 1));
                 continue;
@@ -246,11 +245,9 @@ public class Menu {
     //**************************************************************************************************************//
 
 
-    /******************************* Блок меню админа*************************************/
+    /******************************* Меню админа*************************************/
     //Метод, реализующий меню пользователя с правами администратора
     public void menuAdmin() {
-
-        GoodService goodService = new GoodService();
 
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
@@ -268,13 +265,13 @@ public class Menu {
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
-                    goodService.showGoods();
+                    goodsShow();
                     break;
                 case "2":
-                    entryCategory();
+                    showGoodsByCategory();
                     break;
                 case "3":
-                    goodService.sortGoodByCategoryAndPrice();
+                    showSortGoods();
                     break;
                 case "4":
                     goodService.addGood();
@@ -292,8 +289,6 @@ public class Menu {
                     showUserByLogin();
                     break;
                 case "9":
-//                    Integer idFound = userService.findById();
-//                    if (idFound != null) menuChangeUserByAdnin(idFound);
                     changeUserByAdmin();
                     break;
                 case "0":
@@ -306,54 +301,49 @@ public class Menu {
             }
         }
     }
+    //*************************************************************************************************************** */
 
-    public void usersShow(){
 
-        List<User> userList = userService.getAllUsers();
-        System.out.println("Список пользователей:");
-        for (User user : userList) {
-            System.out.println(user);
+    /******************************** Показать товары (п.п. 1, 2, 3) ********************************/
+    //Метода, выводящий список всех товаров
+    public void goodsShow(){
+
+        List<Good> goodList = goodService.getGoods();
+        System.out.println("Актуальный список товаров:");
+        for (Good good : goodList) {
+            System.out.println(good);
         }
     }
 
-    //Метод поиска пользователя по логину
-    public void showUserByLogin(){
+    //Метод поиска товара по категории
+    public void showGoodsByCategory(){
 
-        String login = askValue("логин");
+        String category = askValue("категорию");
 
-        Optional<User> loginOptinalFound = userService.findUserByLogin(login);
-        if(loginOptinalFound.isPresent()){
-            User loginCurrent = loginOptinalFound.get();
-            System.out.println("\nПользователь с логином '" + login + "\':\n" + loginCurrent);
-        }else System.out.println("\nПользователь с логином '" + login + "\' отсутствует. Введете корректный логин");
+        Optional<Good> categoryOptinalFound = goodService.getGoodsByCategory(category);
+        if(categoryOptinalFound.isPresent()){
+            Good categoryCurrent = categoryOptinalFound.get();
+            System.out.println("\nТовар(ы) категории '" + category + "\':\n" + categoryCurrent);
+        }else System.out.println("\nТовар(ы) категории '" + category + "\' отсутствуют. Введете корректную категорию");
     }
 
 
-    public void changeUserByAdmin(){
+    public void showSortGoods() {
 
-        try {
-            int idInput = askId();
-            Optional<User> idOptinal = userService.findById(idInput);
+        Optional<List<Good>> goodSortListOptinal = goodService.getGoodsByCategoryAndPrice();
 
-            if (idOptinal.isEmpty()) {
-                System.out.println("\nПользователь с id '" +  idInput + "' отсутствует. Введите корректный id");
-                return;
+        if(goodSortListOptinal.isPresent()){
+            List<Good> goodSortList = goodSortListOptinal.get();
+            System.out.println("Товары, сортированные по категории и затем по цене:\n");
+            for (Good good : goodSortList){
+                System.out.println(good);
             }
-            int id = idOptinal.get().getId();
-            menuChangeUserByAdmin(id);
-        }catch (NumberFormatException e){
-            System.out.println("Неверный формат id. Введите число.");
-        }
+        }else System.out.println("\nТовары не найдены");
     }
+    //*************************************************************************************************************** */
 
-    Optional<User> userShow(int currentId){
-        Optional<User> currentUser = userService.findById(currentId);
-        if(currentUser.isPresent()){
-            return currentUser;
-        }
-        return Optional.empty();
-    }
 
+    /******************************** Блок работы с пользователями ********************************/
     //Метод, реализующий меню для изменения пользователя (администраторский доступ)
     public void menuChangeUserByAdmin(int currentId) {
 
@@ -415,10 +405,60 @@ public class Menu {
         }
     }
 
+    //Метод, выводящий актуальный список пользователей
+    public void usersShow(){
+
+        List<User> userList = userService.getAllUsers();
+        System.out.println("Список пользователей:");
+        for (User user : userList) {
+            System.out.println(user);
+        }
+    }
+
+    //Метод поиска пользователя по логину
+    public void showUserByLogin(){
+
+        String login = askValue("логин");
+
+        Optional<User> loginOptinalFound = userService.getUserByLogin(login);
+        if(loginOptinalFound.isPresent()){
+            User loginCurrent = loginOptinalFound.get();
+            System.out.println("\nПользователь с логином '" + login + "\':\n" + loginCurrent);
+        }else System.out.println("\nПользователь с логином '" + login + "\' отсутствует. Введете корректный логин");
+    }
+
+    //Метод поиска пользователя по id
+    public void changeUserByAdmin(){
+
+        try {
+            int idInput = askId();
+            Optional<User> idOptinal = userService.findById(idInput);
+
+            if (idOptinal.isEmpty()) {
+                System.out.println("\nПользователь с id '" +  idInput + "' отсутствует. Введите корректный id");
+                return;
+            }
+            int id = idOptinal.get().getId();
+            menuChangeUserByAdmin(id);
+        }catch (NumberFormatException e){
+            System.out.println("Неверный формат id. Введите число.");
+        }
+    }
+
+    //Метод выводящий пользователей по ig
+    Optional<User> userShow(int currentId){
+        Optional<User> currentUser = userService.findById(currentId);
+        if(currentUser.isPresent()){
+            return currentUser;
+        }
+        return Optional.empty();
+    }
+    //*************************************************************************************************************** */
+
+
+
     //Метод, реализующий меню при изменении товара
     public void menuCurrentGood(Good goodForChange) {
-        GoodService goodService = new GoodService();
-        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Выбранный товар:" + goodForChange);
 
@@ -479,8 +519,6 @@ public class Menu {
     /************************** Блок меню клиента (не админа) *************************************/
     //Метод, реализующий меню клиента (авторизованного пользователя)
     public void menuClient(User user) {//(User user)String login
-//        UserService userService = new UserService();
-        GoodService goodService = new GoodService();
 
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
@@ -493,7 +531,7 @@ public class Menu {
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
-                    goodService.showGoods();
+//                    goodService.showGoods();
                     break;
                 case "2":
                     entryCategory();
@@ -581,13 +619,12 @@ public class Menu {
 
     //Меню запроса категории товара (2 - Показать товары по категориям)
     public void entryCategory() {
-        GoodService goodService = new GoodService();
 
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("\nВведите категорию товара: ");
-        String entryCategory = scanner.nextLine();
-        goodService.checkCategory(entryCategory);
+//        System.out.print("\nВведите категорию товара: ");
+//        String entryCategory = scanner.nextLine();
+//        goodService.checkCategory(entryCategory);
     }
+
+
 
 }
