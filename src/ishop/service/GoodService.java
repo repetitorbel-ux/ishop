@@ -21,7 +21,6 @@ public class GoodService {
 
     //Метод, сериализующий товар
     public void writeGood(List<Good> goodList) {
-        GoodRepository goodRepository = new GoodRepository();
         goodRepository.saveGood(goodList);
     }
     //***************************************************************************************************************/
@@ -64,71 +63,38 @@ public class GoodService {
 
 
     /************************************** Реализация п.4 - Добавить товар **************************************/
-    //Ввод товара и создание коллекции (4 - Добавить товар)
-//    public Good goodEntry(int id) {
-
-//        Menu menu = new Menu();
-//
-//        String nameGood = menu.askValue(" название товара");
-//
-//        String codeGood = menu.askValue(" код товара");
-//
-//        String brandGood = menu.askValue(" бренд товара");
-//
-//        String categoryGood = menu.askValue(" категорию товара");
-
-//        int priceGood = Integer.parseInt(menu.askValue(" цену товара"));
-//
-//        int ageLimit = Integer.parseInt(menu.askValue(" ограничение по возрасту"));
-//
-//        //Создание нового товара и коллекции товаров
-//        Good goodNew = new Good(id, nameGood, codeGood, brandGood, categoryGood, priceGood, ageLimit);
-
-//        List<Good> goodList = new ArrayList<>();//пустая коллекция
-
-//        goodList.add(goodNew);//добавление нового (введенного) товара в коллекцию
-
-//        System.out.println("\nДобавленный товар: " + goodList);
-//
-//        writeGood(goodList);//вызов метода, сериализующего товар
-
-//        return goodNew;
-//    }
-
-    //Метод, добавляющий товар (4 - Добавить товар)
-    public void addGood() {
+        //Метод, добавляющий товар (4 - Добавить товар)
+    public void addGood(int id, String goodname, String goodCode, String goodBrand, String goodCategory, int goodPrice, int goodAgeLimit) {
         List<Good> goodExistList = getGoodListFromFile();
 
-        if (goodExistList.isEmpty()) {
-//            goodEntry(1);
-        } else {
-            Optional<Good> idGoodMax = findMaxGoodId(goodExistList);
-            if (idGoodMax.isPresent()) {
-                Good idMax = idGoodMax.get();
-                int idNext = idGoodMax.get().getId() + 1;
-//                Good goodNext = goodEntry(idNext);
+        //Создание коллекции товаров
+        List<Good> goodList = new ArrayList<>();
 
-                //Создание коллекции товаров
-                List<Good> goodList = new ArrayList<>();
+        //Создаем новый товар
+        Good goodNew = new Good(id, goodname, goodCode, goodBrand, goodCategory, goodPrice, goodAgeLimit);
 
-                //Добавление в коллекцию списка из существующих товаров
-                for (int i = 0; i < goodExistList.size(); i++) {
-                    goodList.add(goodExistList.get(i));
-                }
-
-                //Добавление нового товара в список
-//                goodList.add(goodNext);
-
-                //Создание объекта типа GoodRepository и вызов метода для сериализации списка товаров
-                GoodRepository goodRepository = new GoodRepository();
-                goodRepository.saveGood(goodList);
-            }
+        //Добавление в коллекцию списка из существующих товаров
+        for (int i = 0; i < goodExistList.size(); i++) {
+            goodList.add(goodExistList.get(i));
         }
+
+        //Добавление нового товара в список
+        goodList.add(goodNew);
+
+        goodRepository.saveGood(goodList);
+
     }
 
     //Метод поиска максимального значения в списке
     private Optional<Good> findMaxGoodId(List<Good> goodList) {
         return goodList.stream().max(Comparator.comparing(good -> {
+            return good.getId();
+        }));
+    }
+
+    public Optional<Good> findMaxGoodId2() {
+        List<Good> goodExistList = getGoodListFromFile();
+        return goodExistList.stream().max(Comparator.comparing(good -> {
             return good.getId();
         }));
     }

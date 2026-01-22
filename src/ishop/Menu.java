@@ -2,9 +2,11 @@ package ishop;
 
 import ishop.entity.Good;
 import ishop.entity.User;
+import ishop.repository.GoodRepository;
 import ishop.service.GoodService;
 import ishop.service.UserService;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -241,7 +243,7 @@ public class Menu {
                     showSortGoods();
                     break;
                 case "4":
-                    goodService.addGood();
+                    goodCreating();
                     break;
                 case "5":
                     goodService.callUpdateGoodById();
@@ -312,6 +314,80 @@ public class Menu {
         }else System.out.println("\nТовары не найдены");
     }
     //*************************************************************************************************************** */
+
+    /******************************** Действия с товарами (п.п. 4, 5, 6) ********************************/
+    //Ввод товара и создание коллекции (4 - Добавить товар)
+    public void goodCreating() { //goodName, goodCode, goodBrand, goodCategory, goodPrice, goodAgeLimit
+
+        Optional<String> nameOptinal = checkValue("название товара");
+        if (nameOptinal.isEmpty()) {
+            System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+            return;
+        }
+        String goodName = nameOptinal.get();
+
+        Optional<String> codeOptinal = checkValue("код товара");
+        if (codeOptinal.isEmpty()) {
+            System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+            return;
+        }
+        String goodCode = codeOptinal.get();
+
+        Optional<String> brandOptinal = checkValue("бренд товара");
+        if (brandOptinal.isEmpty()) {
+            System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+            return;
+        }
+        String goodBrand = brandOptinal.get();
+
+        Optional<String> categoryOptinal = checkValue("категорию товара");
+        if (categoryOptinal.isEmpty()) {
+            System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+            return;
+        }
+        String goodCategory = categoryOptinal.get();
+
+        Optional<Integer> priceOptinal = checkValueInt("цену товара");
+        if (priceOptinal.isEmpty()) {
+            System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+            return;
+        }
+        Integer goodPrice = priceOptinal.get();
+
+        Optional<Integer> ageLimitOptinal = checkValueInt("ограничение по возрасту");
+        if (ageLimitOptinal.isEmpty()) {
+            System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
+            return;
+        }
+        Integer goodAgeLimit = ageLimitOptinal.get();
+
+        List<Good> goodExistList = goodService.getGoodListFromFile();
+        Optional<Good> idGoodMax = goodService.findMaxGoodId2();
+
+        if (goodExistList.isEmpty()) {
+            goodService.addGood(1, goodName, goodCode, goodBrand, goodCategory, goodPrice, goodAgeLimit);
+        } else {
+            if (idGoodMax.isPresent()){
+                int idNext = idGoodMax.get().getId() + 1;
+                goodService.addGood(idNext, goodName, goodCode, goodBrand, goodCategory, goodPrice, goodAgeLimit);
+            }
+        }
+    }
+
+    public Optional<Integer> checkValueInt(String value) {
+
+        for (int i = 3; i > 0; i--) {
+            int valueInput = askValueInt(value);
+
+            if (valueInput == 0) {
+                System.out.println("Поле '" + value + "' не может быть равным нулю. Повторите ввод. Осталось попыток: " + (i - 1));
+                continue;
+            }
+            return Optional.of(valueInput);
+        }
+        return Optional.empty();
+    }
+
 
 
     /******************************** Блок работы с пользователями ********************************/
@@ -585,6 +661,11 @@ public class Menu {
 
     public int askId() {
         System.out.print("Введите id: ");
+        return Integer.parseInt(scanner.nextLine());
+    }
+
+    public int askValueInt(String value) {
+        System.out.print("Введите " + value + ": ");
         return Integer.parseInt(scanner.nextLine());
     }
 
