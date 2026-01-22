@@ -38,7 +38,7 @@ public class Menu {
                     creatingUser();
                     break;
                 case "2":
-                    loginUser2();
+                    loginUser();
                     break;
                 case "0":
                     System.out.println("Выходим из программы...");
@@ -95,6 +95,7 @@ public class Menu {
         userService.createUser(login, password, name, surname, birthday);
     }
 
+    //Метод для проверки введенного логина при создании пользователя
     public Optional<String> checkLogin(String value) {
 
         for (int i = 3; i > 0; i--) {
@@ -115,6 +116,7 @@ public class Menu {
         return Optional.empty();
     }
 
+    //Метод для проверки введенного поля при создании пользователя
     public Optional<String> checkValue(String value) {
 
         for (int i = 3; i > 0; i--) {
@@ -129,7 +131,7 @@ public class Menu {
         return Optional.empty();
     }
 
-    //Метод проверяющий день рождения на соответствие формату
+    //Метод проверяющий день рождения на соответствие формату при создании пользователя
     public Optional<LocalDate> checkBirthday() {
 
         for (int i = 3; i > 0; i--) {
@@ -171,42 +173,6 @@ public class Menu {
             if (userCurrent.isPresent()) {
                 break;
             } else {
-                if (i == 1) {
-                    System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
-                    return;
-                } else {
-                    System.out.println("Пароль '" + password + "' не верный. Повторите ввод. Осталось попыток: " + (i - 1));
-                    continue;
-                }
-            }
-        }
-
-        if (userCurrent.isPresent() && userCurrent.get().getLogin().equals("vic_tut")) {
-            menuAdmin();
-        } else {
-            menuClient(userCurrent.get());
-        }
-    }
-
-    //Метод начала авторизации - точка входа
-    public void loginUser2() {
-
-        Optional<String> loginOptinal = checkLoginAuth("логин");
-        if (loginOptinal.isEmpty()) {
-            System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
-            return;
-        }
-        String login = loginOptinal.get();
-
-        Optional<User> userCurrent = Optional.empty();
-        for (int i = 3; i > 0; i--) {
-
-            String password = askValue("пароль");
-
-            userCurrent = userService.authenticate(login, password);
-            if (userCurrent.isPresent()) {
-                break;
-            } else {
                 System.out.println("Пароль '" + password + "' не верный. Повторите ввод. Осталось попыток: " + (i - 1));
                 continue;
             }
@@ -223,6 +189,7 @@ public class Menu {
         }
     }
 
+    //Метод поверк логина при авторизации
     public Optional<String> checkLoginAuth(String value) {
 
         for (int i = 3; i > 0; i--) {
