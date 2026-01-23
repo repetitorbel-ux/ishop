@@ -64,28 +64,28 @@ public class Menu {
             System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
             return;
         }
-        String login = String.valueOf(loginOptinal.get());
+        String login = loginOptinal.get();
 
         Optional<String> passwordOptinal = checkValue("пароль");
         if (passwordOptinal.isEmpty()) {
             System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
             return;
         }
-        String password = String.valueOf(passwordOptinal.get());
+        String password = passwordOptinal.get();
 
         Optional<String> nameOptinal = checkValue("имя");
         if (nameOptinal.isEmpty()) {
             System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
             return;
         }
-        String name = String.valueOf(nameOptinal.get());
+        String name = nameOptinal.get();
 
         Optional<String> surnameOptinal = checkValue("фамилию");
         if (surnameOptinal.isEmpty()) {
             System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
             return;
         }
-        String surname = String.valueOf(surnameOptinal.get());
+        String surname = surnameOptinal.get();
 
         Optional<LocalDate> birthdayOptinal = checkBirthday();
         if (birthdayOptinal.isEmpty()) {
@@ -246,7 +246,8 @@ public class Menu {
                     goodCreating();
                     break;
                 case "5":
-                    goodService.callUpdateGoodById();
+//                    goodService.callUpdateGoodById();
+                    findAndCheckGoodById();
                     break;
                 case "6":
                     goodService.delGoodById();
@@ -315,8 +316,9 @@ public class Menu {
     }
     //*************************************************************************************************************** */
 
+
     /******************************** Действия с товарами (п.п. 4, 5, 6) ********************************/
-    //Ввод товара и создание коллекции (4 - Добавить товар)
+    //Метод, обеспечивающий ввод товара
     public void goodCreating() { //goodName, goodCode, goodBrand, goodCategory, goodPrice, goodAgeLimit
 
         Optional<String> nameOptinal = checkValue("название товара");
@@ -359,7 +361,7 @@ public class Menu {
             System.out.println("Количество попыток исчерпано. Пройдите процедуру заново");
             return;
         }
-        Integer goodAgeLimit = ageLimitOptinal.get();
+        int goodAgeLimit = ageLimitOptinal.get();
 
         List<Good> goodExistList = goodService.getGoodListFromFile();
         Optional<Good> idGoodMax = goodService.findMaxGoodId2();
@@ -388,9 +390,95 @@ public class Menu {
         return Optional.empty();
     }
 
+    //Метод поиска товара по id
+    public void findAndCheckGoodById(){
+
+        try {
+            int goodIdInput = askId();
+            Optional<Good> goodIdOptinal = goodService.findGoodById(goodIdInput);
+
+            if (goodIdOptinal.isEmpty()) {
+                System.out.println("\nТовар с id '" +  goodIdInput + "' отсутствует. Введите корректный id");
+                return;
+            }
+            int id = goodIdOptinal.get().getId();
+            menuCurrentGood(id);
+        }catch (NumberFormatException e){
+            System.out.println("Неверный формат id. Введите число.");
+        }
+    }
+
+    //Метод выводящий товар по id
+    Optional<Good> goodShow(int currentId){
+        Optional<Good> currentGood = goodService.findGoodById(currentId);
+        if(currentGood.isPresent()){
+            return currentGood;
+        }
+        return Optional.empty();
+    }
+
+    //Метод, реализующий меню при изменении товара
+    public void menuCurrentGood(int currentId){
+
+        Optional<Good> currentGoodOptnal = goodShow(currentId);
+        Good currentGood = currentGoodOptnal.get();
+        System.out.println("ыбранный товар: " + currentGood);
+
+        while (true) {
+            System.out.println("\nВыберете действие: \n"
+                    + "1 - Изменить название товара \n"
+                    + "2 - Изменить код товара \n"
+                    + "3 - Изменить бренд товара \n"
+                    + "4 - Изменить категорию товара \n"
+                    + "5 - Изменить цену товара \n"
+                    + "6 - Изменить возрастное ограничение товара \n"
+                    + "0 - Выход \n");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.print("Введите новое название товара: ");
+                    goodService.changeCurrentGood(currentGood, scanner.nextLine(), "1");
+                    System.out.println("Данные товара после изменения: " + currentGood);
+                    break;
+                case "2":
+                    System.out.print("Введите новый код товара: ");
+                    goodService.changeCurrentGood(currentGood, scanner.nextLine(), "2");
+                    System.out.println("Данные товара после изменения: " + currentGood);
+                    break;
+                case "3":
+                    System.out.print("Введите новый бренд товара: ");
+                    goodService.changeCurrentGood(currentGood, scanner.nextLine(), "3");
+                    System.out.println("Данные товара после изменения: " + currentGood);
+                    break;
+                case "4":
+                    System.out.print("Введите новую категорию товара : ");
+                    goodService.changeCurrentGood(currentGood, scanner.nextLine(), "4");
+                    System.out.println("Данные товара после изменения: " + currentGood);
+                    break;
+                case "5":
+                    System.out.print("Введите новую цену товара: ");
+                    goodService.changeCurrentGoodInt(currentGood, Integer.parseInt(scanner.nextLine()), "5");
+                    System.out.println("Данные товара после изменения: " + currentGood);
+                    break;
+                case "6":
+                    System.out.print("Введите новые возрастные ограничения товара: ");
+                    goodService.changeCurrentGoodInt(currentGood, Integer.parseInt(scanner.nextLine()), "6");
+                    System.out.println("Данные товара после изменения: " + currentGood);
+                    break;
+                case "0":
+                    System.out.println("Выход из меню");
+                    return;
+                default:
+                    System.out.println("Неверный ввод. Повторите.");
+            }
+        }
+    }
+    //*****************************************************************************************************************//
 
 
-    /******************************** Блок работы с пользователями ********************************/
+    /******************************** Блок работы с пользователями (пп. 7 - 9) ********************************/
     //Метод, реализующий меню для изменения пользователя (администраторский доступ)
     public void menuChangeUserByAdmin(int currentId) {
 
@@ -492,7 +580,7 @@ public class Menu {
         }
     }
 
-    //Метод выводящий пользователей по ig
+    //Метод выводящий пользователя по id
     Optional<User> userShow(int currentId){
         Optional<User> currentUser = userService.findById(currentId);
         if(currentUser.isPresent()){
@@ -501,66 +589,6 @@ public class Menu {
         return Optional.empty();
     }
     //*************************************************************************************************************** */
-
-
-
-    //Метод, реализующий меню при изменении товара
-    public void menuCurrentGood(Good goodForChange) {
-
-        System.out.println("Выбранный товар:" + goodForChange);
-
-        while (true) {
-            System.out.println("\nВыберете действие: \n"
-                    + "1 - Изменить название товара \n"
-                    + "2 - Изменить код товара \n"
-                    + "3 - Изменить бренд товара \n"
-                    + "4 - Изменить категорию товара \n"
-                    + "5 - Изменить цену товара \n"
-                    + "6 - Изменить возрастное ограничение товара \n"
-                    + "0 - Выход \n");
-
-            String choice = scanner.nextLine();
-
-            switch (choice) {
-                case "1":
-                    System.out.print("Введите новое название товара: ");
-                    goodService.changeCurrentGood(goodForChange, scanner.nextLine(), "1");
-                    System.out.println("Данные товара после изменения: " + goodForChange);
-                    break;
-                case "2":
-                    System.out.print("Введите новый код товара: ");
-                    goodService.changeCurrentGood(goodForChange, scanner.nextLine(), "2");
-                    System.out.println("Данные товара после изменения: " + goodForChange);
-                    break;
-                case "3":
-                    System.out.print("Введите новый бренд товара: ");
-                    goodService.changeCurrentGood(goodForChange, scanner.nextLine(), "3");
-                    System.out.println("Данные товара после изменения: " + goodForChange);
-                    break;
-                case "4":
-                    System.out.print("Введите новую категорию товара : ");
-                    goodService.changeCurrentGood(goodForChange, scanner.nextLine(), "4");
-                    System.out.println("Данные товара после изменения: " + goodForChange);
-                    break;
-                case "5":
-                    System.out.print("Введите новую цену товара: ");
-                    goodService.changeCurrentGoodInt(goodForChange, Integer.parseInt(scanner.nextLine()), "5");
-                    System.out.println("Данные товара после изменения: " + goodForChange);
-                    break;
-                case "6":
-                    System.out.print("Введите новые возрастные ограничения товара: ");
-                    goodService.changeCurrentGoodInt(goodForChange, Integer.parseInt(scanner.nextLine()), "6");
-                    System.out.println("Данные товара после изменения: " + goodForChange);
-                    break;
-                case "0":
-                    System.out.println("Выход из меню");
-                    return;
-                default:
-                    System.out.println("Неверный ввод. Повторите.");
-            }
-        }
-    }
-    //*****************************************************************************************************************//
 
 
     /************************** Блок меню клиента (не админа) *************************************/
@@ -668,15 +696,6 @@ public class Menu {
         System.out.print("Введите " + value + ": ");
         return Integer.parseInt(scanner.nextLine());
     }
-
-    //Меню запроса категории товара (2 - Показать товары по категориям)
-    public void entryCategory() {
-
-//        System.out.print("\nВведите категорию товара: ");
-//        String entryCategory = scanner.nextLine();
-//        goodService.checkCategory(entryCategory);
-    }
-
 
 
 }

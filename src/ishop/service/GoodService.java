@@ -1,6 +1,7 @@
 package ishop.service;
 
 import ishop.entity.Good;
+import ishop.entity.User;
 import ishop.repository.GoodRepository;
 
 import java.util.*;
@@ -8,6 +9,7 @@ import java.util.*;
 public class GoodService {
     private final GoodRepository goodRepository;
 
+    //Конструктор
     public GoodService(GoodRepository goodRepository) {
         this.goodRepository = goodRepository;
     }
@@ -82,7 +84,6 @@ public class GoodService {
         goodList.add(goodNew);
 
         goodRepository.saveGood(goodList);
-
     }
 
     //Метод поиска максимального значения в списке
@@ -102,21 +103,16 @@ public class GoodService {
 
 
     /*** ******************************* Реализация п.5 - Обновить товар *******************************************/
-    //Метод для выбора товара по id и вызова меню для обновления товара
-    public void callUpdateGoodById() {
+    //Метод поиска пользователя по id
+    public Optional<Good> findGoodById(int id) {
 
-//        Menu menu = new Menu();
-//        GoodRepository goodRepository = new GoodRepository();
-//
-//        int goodId = Integer.parseInt(menu.askValue("id товара"));
-//        Good good = goodRepository.findById(goodId);
-//
-//        if (good == null) {
-//            System.out.println("Товар не найден. Повторите ввод id");
-//            return;
-//        }
-//
-//        menu.menuCurrentGood(good);
+        List<Good> goodList = getGoodListFromFile();
+        for (Good good : goodList) {
+            if (good.getId() == id) {
+                return Optional.of(good);
+            }
+        }
+        return Optional.empty();
     }
 
     //Метод изменяющий (обновляющий) товар (String value)
