@@ -13,7 +13,8 @@ public class Start {
         UserRepository userRepository = new UserRepository();
         GoodRepository goodRepository = new GoodRepository();
 
-        UserService userService = new UserService(userRepository);// Передаём репозиторий, с которым UserService будет работать
+        //Передаём репозитории, с которыми  будет работать слой Service
+        UserService userService = new UserService(userRepository);
         GoodService goodService = new GoodService(goodRepository);
 
         Scanner scanner = new Scanner(System.in);

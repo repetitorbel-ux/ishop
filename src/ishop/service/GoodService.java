@@ -208,35 +208,17 @@ public class GoodService {
 
     /*********************************************** Реализация п. 6 ***********************************************/
     //Метод, удаляющий товар
-    public void delGoodById() {
-        GoodRepository goodRepository = new GoodRepository();
+    public void delGoodById(int id) {
+
         List<Good> goodList = getGoodListFromFile();
-//        Menu menu = new Menu();
-//
-//        int id = Integer.parseInt(menu.askValue(" id товара для удаления"));
-//
-//        Good goodTemp = null;
-//        Good goodFound = goodRepository.findById(id);
-//        if (goodFound == null) {
-//            System.out.println("Товар не найден.");
-//        } else {
-//            List<Good> temp = new ArrayList<>();
-//            for (Good good : goodList) {
-//                if (good.getId() == id) {
-//                    temp.add(goodFound);
-//                }
-//                goodTemp = goodFound;
-//            }
-//            System.out.print("\nУдаляемый товар: " + goodTemp + "\n");
-//            goodList.removeAll(temp);
-//        }
-//
-//        writeGood(goodList); //Сохраняем изменения в файл
-//
-//        if (!(goodTemp == null)) {
-//            System.out.print("\nУдаление выполнено. " );
-//            showGoods();
-//        }
+        Good goodForDel = goodRepository.findById(id);
+        List<Good> temp = new ArrayList<>();
+
+        temp.add(goodForDel);
+        goodList.removeAll(temp);
+
+        writeGood(goodList); //Сохраняем изменения в файл
+
     }
     //*************************************************************************************************************/
 

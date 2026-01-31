@@ -246,11 +246,10 @@ public class Menu {
                     goodCreating();
                     break;
                 case "5":
-//                    goodService.callUpdateGoodById();
-                    findAndCheckGoodById();
+                    findAndCheckGoodById(5);
                     break;
                 case "6":
-                    goodService.delGoodById();
+                    findAndCheckGoodById(6);
                     break;
                 case "7":
                     usersShow();
@@ -302,6 +301,7 @@ public class Menu {
     }
 
 
+    //Метод, получающий и показывающий отсортированные товары
     public void showSortGoods() {
 
         Optional<List<Good>> goodSortListOptinal = goodService.getGoodsByCategoryAndPrice();
@@ -376,6 +376,7 @@ public class Menu {
         }
     }
 
+    //Метод, проверяющий введенное значение на равенство нулю
     public Optional<Integer> checkValueInt(String value) {
 
         for (int i = 3; i > 0; i--) {
@@ -390,8 +391,8 @@ public class Menu {
         return Optional.empty();
     }
 
-    //Метод поиска товара по id
-    public void findAndCheckGoodById(){
+    //Метод, получающий и показывающий товара по id
+    public void findAndCheckGoodById(int choice){
 
         try {
             int goodIdInput = askId();
@@ -401,14 +402,22 @@ public class Menu {
                 System.out.println("\nТовар с id '" +  goodIdInput + "' отсутствует. Введите корректный id");
                 return;
             }
-            int id = goodIdOptinal.get().getId();
-            menuCurrentGood(id);
+            int currentId = goodIdOptinal.get().getId();
+            if (choice == 5) {
+                menuCurrentGood(currentId);
+            }else {
+                Optional<Good> currentGoodOptinal = goodShow(currentId);
+                Good currentGood = currentGoodOptinal.get();
+                System.out.println("Удаленный товар: " + currentGood);
+                goodService.delGoodById(currentId);
+
+            }
         }catch (NumberFormatException e){
             System.out.println("Неверный формат id. Введите число.");
         }
     }
 
-    //Метод выводящий товар по id
+    //Метод, выводящий товар по id
     Optional<Good> goodShow(int currentId){
         Optional<Good> currentGood = goodService.findGoodById(currentId);
         if(currentGood.isPresent()){
@@ -420,9 +429,9 @@ public class Menu {
     //Метод, реализующий меню при изменении товара
     public void menuCurrentGood(int currentId){
 
-        Optional<Good> currentGoodOptnal = goodShow(currentId);
-        Good currentGood = currentGoodOptnal.get();
-        System.out.println("ыбранный товар: " + currentGood);
+        Optional<Good> currentGoodOptinal = goodShow(currentId);
+        Good currentGood = currentGoodOptinal.get();
+        System.out.println("Выбранный товар: " + currentGood);
 
         while (true) {
             System.out.println("\nВыберете действие: \n"
@@ -550,7 +559,7 @@ public class Menu {
         }
     }
 
-    //Метод поиска пользователя по логину
+    //Метод, получающий и выводящий пользователя по логину
     public void showUserByLogin(){
 
         String login = askValue("логин");
@@ -562,7 +571,7 @@ public class Menu {
         }else System.out.println("\nПользователь с логином '" + login + "\' отсутствует. Введете корректный логин");
     }
 
-    //Метод поиска пользователя по id
+    //Метод, получающий по пользователя id и проверяющий корректность введенного id
     public void changeUserByAdmin(){
 
         try {
@@ -696,6 +705,5 @@ public class Menu {
         System.out.print("Введите " + value + ": ");
         return Integer.parseInt(scanner.nextLine());
     }
-
 
 }
