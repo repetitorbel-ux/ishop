@@ -17,7 +17,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-
     /******************************* Методы для работы со слоем Repository *******************************/
     //Метод, получающий список существующих пользователей
     public List<User> getUserListFromFile() {
@@ -78,7 +77,7 @@ public class UserService {
     }
 
     //Метод поиска существующего логина в списке пользователей
-    public Optional<User> findUserByLogin(String login){
+    public Optional<User> getUserByLogin(String login){
 
         List<User> userList = getUserListFromFile();
         return userList.stream().filter(user -> user.getLogin().equals(login)).findFirst();
